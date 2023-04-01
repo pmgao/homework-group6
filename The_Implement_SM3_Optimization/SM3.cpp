@@ -102,6 +102,7 @@ void sm3_final(sm3_ctx* ctx, uint8_t* digest) {
 	for (i = 0; i < sizeof(ctx->digest) / sizeof(ctx->digest[0]); i++) {
 		pdigest[i] = byte_swap32(ctx->digest[i]);
 	}
+	memset(ctx, 0, sizeof(sm3_ctx));
 }
 
 static void sm3_compress(uint32_t digest[sm3_block_BYTES / sizeof(uint32_t)], const uint8_t block[sm3_block_BYTES]) {
