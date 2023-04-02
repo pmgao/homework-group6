@@ -2,7 +2,6 @@
 #include<bitset>
 #include<intrin.h>
 
-#define NUM  4294967296;
 #define MAX_LEN 2<<12
 #define rol(x,j) ((x<<j)|(unsigned int(x)>>(32-j)))
 #define P0(x) ((x) ^ rol((x), 9) ^ rol((x), 17))
