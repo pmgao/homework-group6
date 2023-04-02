@@ -159,12 +159,12 @@ do { \
 } while (0)
 
 uint32_t IV[8] = { 0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600, 0xa96f30bc, 0x163138aa, 0xe38dee4d ,0xb0fb0e4e };
-char* plaintext_after_stuffing;
+char plaintext_after_stuffing[MAX_LEN] = { '\0' };
 
 static void dump_buf(char* hash, size_t lenth)
 {
     for (size_t i = 0; i < lenth; i++) {
-        printf("%02x", (unsigned char)hash[i]);
+        printf("%02x", (uint8_t)hash[i]);
     }
 }
 
@@ -176,7 +176,6 @@ uint32_t bit_stuffing(uint8_t* plaintext, size_t len) {
     uint32_t lenth_for_p_after_stuffing;
     size_t i, j, k = the_mod_of_fin_froup < 448 ? 1 : 2;
     lenth_for_p_after_stuffing = (((len >> 6) + k) << 6);
-    plaintext_after_stuffing = new char[lenth_for_p_after_stuffing];
 
     __m128i* src = (__m128i*)plaintext;
     __m128i* dst = (__m128i*)plaintext_after_stuffing;
@@ -214,7 +213,7 @@ void CF_for_simd(uint32_t* V, int* BB) {
 
     UNROLL_LOOP_16_0(BYTE_SWAP_W);
     UNROLL_LOOP_4_16(UPDATE_W)
-    UNROLL_LOOP_16_64_1(LOAD_AND_XOR);
+        UNROLL_LOOP_16_64_1(LOAD_AND_XOR);
     int A = V[0], B = V[1], C = V[2], D = V[3], E = V[4], F = V[5], G = V[6], H = V[7];
     UNROLL_LOOP_16_0(LOOP_BODY1);
     UNROLL_LOOP_16_64_0(LOOP_BODY2);
