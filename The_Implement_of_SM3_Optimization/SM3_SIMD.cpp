@@ -172,7 +172,7 @@ static void dump_buf(char* hash, size_t lenth)
 uint32_t bit_stuffing(uint8_t* plaintext, size_t len) {
     uint64_t bit_len = len * uint64_t(8);
     uint64_t the_num_of_fin_group = (bit_len >> 3);
-    uint32_t the_mod_of_fin_froup = bit_len % 512;
+    uint32_t the_mod_of_fin_froup = bit_len & 511;
     uint32_t lenth_for_p_after_stuffing;
     size_t i, j, k = the_mod_of_fin_froup < 448 ? 1 : 2;
     lenth_for_p_after_stuffing = (((len >> 6) + k) << 6);
@@ -235,7 +235,7 @@ void sm3_simd(uint8_t* plaintext, uint32_t* hash_val, size_t len) {
 }
 
 int main() {
-    uint8_t plaintext[MAX_LEN] = "sdusdusdu\0";
+    uint8_t plaintext[MAX_LEN] = "202100460055\0";
     uint32_t hash_val[8];
     size_t len = 0;
     for (size_t i = 0; i < MAX_LEN; i++) {
