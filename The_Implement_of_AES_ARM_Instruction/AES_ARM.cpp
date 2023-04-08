@@ -4,7 +4,7 @@
 #include<arm_neon.h>
 
 
-const uint32_t RK[44] = { 
+const uint32_t RK[44] = {
 	0x2b7e1516,0x28aed2a6,0xabf71588,0x09cf4f3c,
 	0xa0fafe17,0x88542cb1,0x23a33939,0x2a6c7605,
 	0xf2c295f2,0x7a96b943,0x5935807a,0x7359f67f,
@@ -18,11 +18,11 @@ const uint32_t RK[44] = {
 	0xd014f9a8,0xc9ee2589,0xe13f0cc8,0xb6630ca6
 };
 
- uint8_t IN[16] = {
-	0x32,0x88,0x31,0xe0,
-	0x43,0x5a,0x31,0x37,
-	0xf6,0x30,0x98,0x07,
-	0xa8,0x8d,0xa2,0x34
+uint8_t IN[16] = {
+   0x32,0x88,0x31,0xe0,
+   0x43,0x5a,0x31,0x37,
+   0xf6,0x30,0x98,0x07,
+   0xa8,0x8d,0xa2,0x34
 };
 uint8_t OU[16];
 
@@ -62,21 +62,21 @@ void aes128_dec_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44
 	uint8_t* p8 = (uint8_t*)rk;
 
 
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 0)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 1)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 2)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 3)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 4)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 5)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 6)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 7)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 10)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 9)));
 	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 8)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 7)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 6)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 5)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 4)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 3)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 2)));
 
 
 	//final round 
-	block = vaesdq_u8(block, vld1q_u8(p8 + 16 * 9));
+	block = vaesdq_u8(block, vld1q_u8(p8 + 16 * 1));
 	//final xor subkey
-	block = veorq_u8(block, vld1q_u8(p8 + 16 * 10));
+	block = veorq_u8(block, vld1q_u8(p8 + 16 * 0));
 
 	vst1q_u8(ou, block);
 }
