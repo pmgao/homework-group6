@@ -1,9 +1,10 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<stdint.h>
-#include<intrin.h>
+#include<arm_neon.h>
 
-const uint32_t rk[44] = { 
+
+const uint32_t RK[44] = { 
 	0x2b7e1516,0x28aed2a6,0xabf71588,0x09cf4f3c,
 	0xa0fafe17,0x88542cb1,0x23a33939,0x2a6c7605,
 	0xf2c295f2,0x7a96b943,0x5935807a,0x7359f67f,
@@ -17,18 +18,19 @@ const uint32_t rk[44] = {
 	0xd014f9a8,0xc9ee2589,0xe13f0cc8,0xb6630ca6
 };
 
- uint8_t in[16] = {
+ uint8_t IN[16] = {
 	0x32,0x88,0x31,0xe0,
 	0x43,0x5a,0x31,0x37,
 	0xf6,0x30,0x98,0x07,
 	0xa8,0x8d,0xa2,0x34
 };
-uint8_t ou[16];
+uint8_t OU[16];
 
-void print(uint8_t buff[16]) {
+void Print(uint8_t buff[16]) {
 	for (size_t i = 0; i < 16; i++) {
 		printf("%02x ", buff[i]);
 	}
+	printf("\n");
 }
 void aes128_enc_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44]) {
 	uint8x16_t block = vld1q_u8(in);
@@ -48,7 +50,7 @@ void aes128_enc_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44
 	block = vaeseq_u8(block, vld1q_u8(p8 + 16 * 9));
 
 	//final xor subkey
-	block = veorg_u8(block, vld1q_u8(p8 + 16 * 10));
+	block = veorq_u8(block, vld1q_u8(p8 + 16 * 10));
 
 	vst1q_u8(ou, block);
 }
@@ -71,16 +73,17 @@ void aes128_dec_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44
 	block = vaeseq_u8(block, vld1q_u8(p8 + 16 * 9));
 
 	//final xor subkey
-	block = veorg_u8(block, vld1q_u8(p8 + 16 * 10));
+	block = veorq_u8(block, vld1q_u8(p8 + 16 * 10));
 
 	vst1q_u8(ou, block);
 }
 
 int main() {
-	aes128_enc_armv8(in, ou, rk);
-	print(ou);
-	aes128_dec_armv8(ou, in, rk);
-	print(in);
+	aes128_enc_armv8(IN, OU, RK);
+	Print(OU);
+	aes128_dec_armv8(OU, IN, RK);
+	Print(IN);
 
 	return 0;
+
 }
