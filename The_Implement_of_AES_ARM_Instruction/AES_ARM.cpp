@@ -37,15 +37,15 @@ void aes128_enc_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44
 	uint8x16_t block = vld1q_u8(in);
 
 	uint8_t* p8 = (uint8_t*)rk;
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 0)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 1)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 2)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 3)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 4)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 5)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 6)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 7)));
-	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 + 8)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 0)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 1)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 2)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 3)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 4)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 5)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 6)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 7)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 8)));
 
 	//final round 
 	block = vaeseq_u8(block, vld1q_u8(p8 + 16 * 9));
@@ -62,15 +62,15 @@ void aes128_dec_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44
 	uint8_t* p8 = (uint8_t*)rk;
 
 
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 0)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 1)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 2)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 3)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 4)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 5)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 6)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 7)));
-	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 + 8)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 0)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 1)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 2)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 3)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 4)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 5)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 6)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 7)));
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 8)));
 
 
 	//final round 
