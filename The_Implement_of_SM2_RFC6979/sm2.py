@@ -195,6 +195,8 @@ def sign(private_key, message, Z_A):
     k = int(sha256(
         (str(private_key) + sm3.sm3_hash(func.bytes_to_list(bytes(message, encoding='utf-8')))).encode()).hexdigest(),
             16)  # 伪随机k的生成_RFC6979
+    if k >= P:
+        return None
     random_point = elliptic_multiply(k, G)
 
     r = (e + random_point[0]) % N
@@ -231,6 +233,11 @@ if __name__ == "__main__":
     ID = input("ID = ")
     Z_A = precompute(ID, A, B, G_X, G_Y, pubkey[0], pubkey[1])
     signature = sign(prikey, message, str(Z_A))
+    while signature is None:
+        prikey, pubkey = generate_key()
+        print('new pk：', pubkey)
+        Z_A = precompute(ID, A, B, G_X, G_Y, pubkey[0], pubkey[1])
+        signature = sign(prikey, message, str(Z_A))
     print("sign: ", signature)
     if verify(pubkey, ID, message, signature) == 1:
-        print('verified')
+        print('verified!')
