@@ -194,7 +194,7 @@ def sign(private_key, message, Z_A):
     e = int(e, 16)
     k = int(sha256(
         (str(private_key) + sm3.sm3_hash(func.bytes_to_list(bytes(message, encoding='utf-8')))).encode()).hexdigest(),
-            16)
+            16) #伪随机k的生成_RFC6979
     random_point = elliptic_multiply(k, G)
 
     r = (e + random_point[0]) % N
