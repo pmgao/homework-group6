@@ -3,8 +3,8 @@
 #include<utility>
 #include<string>
 #include<sstream>
-#include<openssl/sha.h>
-#include<openssl/evp.h>
+#include<openssl/sha.h> 
+#include<openssl/evp.h> //用于调用sm3
 using namespace NTL;
 using std::pair;
 using std::string;
