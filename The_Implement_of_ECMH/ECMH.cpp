@@ -49,7 +49,7 @@ node elliptic_inv(node p) {
 	return node(p.first, P - p.second);
 }
 
-node elliptic_sub(node p,node q) {
+node elliptic_sub(node p, node q) {
 	return elliptic_add(p, elliptic_inv(q));
 }
 
@@ -100,13 +100,13 @@ node ADD(node ecmh, string msg) {
 node elliptic_double(node p) {
 	static ZZ r[2];
 	ZZ slope = (3 * power(p.first, 2) + A) * InvMod(2 * p.second % P, P) % P;
-	r[0] = (power(slope, 2) - p.first*2) % P;
+	r[0] = (power(slope, 2) - p.first * 2) % P;
 	r[1] = (slope * (p.first - r[0]) - p.second) % P;
 	return node(r[0], r[1]);
 }
 
 node single(string msg) {
-	return ADD(node(to_ZZ(0),to_ZZ(0)), msg);
+	return ADD(node(to_ZZ(0), to_ZZ(0)), msg);
 }
 
 node remove(node ecmh, string msg) {
