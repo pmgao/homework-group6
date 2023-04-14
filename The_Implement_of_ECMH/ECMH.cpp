@@ -21,6 +21,31 @@ ZZ B = to_ZZ(7);
 ZZ P = to_ZZ("115792089237316195423570985008687907853269984665640564039457584007908834671663");
 ZZ N = to_ZZ("115792089237316195423570985008687907852837564279074904382605163141518161494337");
 
+ZZ stringToNumber(string str)
+{
+	ZZ number = conv<ZZ>(str[0]);
+	long len = str.length();
+	for (long i = 1; i < len; i++)
+	{
+		number *= 128;
+		number += conv<ZZ>(str[i]);
+	}
+
+	return number;
+}
+string numberToString(ZZ num)
+{
+	long len = ceil(log(num) / log(128));
+	char* str=new char[len];
+	for (long i = len - 1; i >= 0; i--)
+	{
+		str[i] = conv<int>(num % 128);
+		num /= 128;
+	}
+
+	return (string)str;
+}
+
 node elliptic_add(node p, node q) {
 	if ((p.first | p.second | q.first | q.second) != 0) {
 		return node(to_ZZ(0), to_ZZ(0));
@@ -59,14 +84,14 @@ ZZ Legendre(ZZ y, ZZ p) {
 
 ZZ msg_to_x(ZZ m) {
 	string x_;
-	SHA256((const unsigned char*)conv<string>(m).data(), conv<string>(m).length(), (unsigned char*)x_.data());
+	SHA256((const unsigned char*)numberToString(m).data(), numberToString(m).length(), (unsigned char*)x_.data());
 	ZZ x;
 	while (1) {
-		ZZ x = conv<ZZ>(x_);
+		ZZ x = stringToNumber(x_);
 		if (Legendre(x, P) != 0) {
 			break;
 		}
-		SHA256((const unsigned char*)conv<string>(m).data(), conv<string>(m).length(), (unsigned char*)x_.data());
+		SHA256((const unsigned char*)numberToString(m).data(), numberToString(m).length(), (unsigned char*)x_.data());
 	}
 	return x;
 }
@@ -86,7 +111,7 @@ ZZ get_y(ZZ x) {
 }
 
 node msg_to_dot(string m) {
-	ZZ M = conv<ZZ>(m);
+	ZZ M = stringToNumber(m);
 	ZZ x = msg_to_x(M);
 	ZZ y = get_y(x);
 	return node(x, y);
