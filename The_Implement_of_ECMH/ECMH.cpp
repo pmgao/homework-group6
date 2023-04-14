@@ -114,7 +114,7 @@ node remove(node ecmh, string msg) {
 }
 
 node combine(vector<string> msg_set) {
-	node ans;
+	node ans = single(msg_set[0]);
 	size_t len = msg_set.size() - 1;
 	for (size_t i = 0; i < len; i++) {
 		ans = ADD(ans, msg_set[i + 1]);
