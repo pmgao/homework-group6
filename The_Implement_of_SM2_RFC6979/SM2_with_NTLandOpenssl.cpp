@@ -228,7 +228,7 @@ int main() {
 		node signature = sign(key.first, message, Z_A);
 	}
 
-	if (verify(key.second, ID, message, signature) == 1) {
+	if (verify(key.second, ID, message, signature)) {
 		printf("verified!");
 	}
 	return 0;
