@@ -125,6 +125,8 @@ node combine(vector<string> msg_set) {
 int main() {
 	string m1 = "202100460055";
 	string m2 = "1234567890";
-	cout << single(m1).first << " " << single(m1).second << endl;
+	node res;
+	res = single(m1);
+	cout << res.first << " " << res.second << endl;
 	return 0;
 }
