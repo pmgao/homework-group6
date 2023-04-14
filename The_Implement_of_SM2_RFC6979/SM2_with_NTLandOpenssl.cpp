@@ -9,7 +9,6 @@ using namespace NTL;
 using std::pair;
 using std::string;
 using std::to_string;
-using std::stoi;
 using std::stringstream;
 typedef pair<ZZ, ZZ> node;
 typedef pair<ZZ, node> keys;
