@@ -21,6 +21,31 @@ ZZ G_X = to_ZZ("5506626302227734366957871889516853432625060345377759417550018736
 ZZ G_Y = to_ZZ("32670510020758816978083085130507043184471273380659243275938904335757337482424");
 node G = node(G_X, G_Y);
 
+ZZ stringToNumber(string str)
+{
+	ZZ number = conv<ZZ>(str[0]);
+	long len = str.length();
+	for (long i = 1; i < len; i++)
+	{
+		number *= 128;
+		number += conv<ZZ>(str[i]);
+	}
+
+	return number;
+}
+string numberToString(ZZ num)
+{
+	long len = ceil(log(num) / log(128));
+	char* str = new char[len];
+	for (long i = len - 1; i >= 0; i--)
+	{
+		str[i] = conv<int>(num % 128);
+		num /= 128;
+	}
+
+	return (string)str;
+}
+
 ZZ Legendre(ZZ y, ZZ p) {
 	return PowerMod(y, (p - 1) / 2, p);
 }
@@ -163,7 +188,7 @@ node sign(ZZ private_key, string message, string Z_A) {
 	EVP_DigestUpdate(ctx, _M.data(), _M.length());
 	EVP_DigestFinal_ex(ctx, (unsigned char*)_M_b.data(), &len);
 	EVP_MD_CTX_free(ctx);
-	ZZ e = conv<ZZ>(_M_b);
+	ZZ e = stringToNumber(_M_b);
 
 	string e_;
 	ctx = EVP_MD_CTX_new();
@@ -174,8 +199,8 @@ node sign(ZZ private_key, string message, string Z_A) {
 	EVP_MD_CTX_free(ctx);
 
 	string k_;
-	SHA256((const unsigned char*)(conv<string>(private_key) + e_).data(), (conv<string>(private_key) + e_).length(), (unsigned char*)k_.data());
-	ZZ k = conv<ZZ>(k_);
+	SHA256((const unsigned char*)(numberToString(private_key) + e_).data(), (numberToString(private_key) + e_).length(), (unsigned char*)k_.data());
+	ZZ k = stringToNumber(k_);
 	if (k >= P) {
 		return node(to_ZZ(0), to_ZZ(0));
 	}
@@ -203,7 +228,7 @@ bool verify(node public_key, string id, string message, node signature) {
 	EVP_DigestFinal_ex(ctx, (unsigned char*)e_.data(), &len);
 	EVP_MD_CTX_free(ctx);
 
-	ZZ e = conv<ZZ>(e_);
+	ZZ e = stringToNumber(e_);
 	ZZ t = (r + s) % N;
 
 	node point = elliptic_multiply(s, G);
