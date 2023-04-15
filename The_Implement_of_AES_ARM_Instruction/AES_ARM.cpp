@@ -45,6 +45,11 @@ const uint8_t SBox[256] = {
 	0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16  /*f*/
 };
 
+uint32_t byte_swap32(uint32_t val) {
+	val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+	return (val << 16) | (val >> 16);
+}
+
 void KeyExpansion(uint32_t key[4], uint32_t rk[44]) {
 	size_t i;
 	uint32_t temp;
@@ -59,6 +64,9 @@ void KeyExpansion(uint32_t key[4], uint32_t rk[44]) {
 			temp = SubWord(RotWord(temp)) ^ Rcon[i / 4 - 1];
 		}
 		rk[i] = rk[i - 4] ^ temp;
+	}
+	for (i = 0; i < 44; ++i) {
+		rk[i] = byte_swap32(rk[i]);
 	}
 }
 void Print(uint8_t buff[16]) {
