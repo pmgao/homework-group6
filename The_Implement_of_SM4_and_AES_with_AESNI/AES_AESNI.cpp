@@ -1,13 +1,13 @@
-#include <stdint.h>
-#include <stdio.h>
-#include <wmmintrin.h>
+#include<stdint.h>
+#include<stdio.h>
+#include<wmmintrin.h>
 #define LENGTH 64
 #if !defined (ALIGN16)
-# if defined (__GNUC__)
-# define ALIGN16 __attribute__ ( (aligned (16)))
-# else
-# define ALIGN16 __declspec (align (16))
-# endif
+#if defined (__GNUC__)
+#define ALIGN16 __attribute__ ( (aligned (16)))
+#else
+#define ALIGN16 __declspec (align (16))
+#endif
 #endif
 
 ALIGN16 uint8_t AES128_TEST_KEY[] = { 0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,
@@ -29,8 +29,7 @@ ALIGN16 uint8_t ECB128_EXPECTED[] = { 0x3a,0xd7,0x7b,0xb4,0x0d,0x7a,0x36,0x60,
  0x7b,0x0c,0x78,0x5e,0x27,0xe8,0xad,0x3f,
  0x82,0x23,0x20,0x71,0x04,0x72,0x5d,0xd4 };
 
-void print_m128i_with_string(const char* string, __m128i data)
-{
+void print_m128i_with_string(const char* string, __m128i data) {
 	unsigned char* pointer = (unsigned char*)&data;
 	int i;
 	printf("%-40s[0x", string);
@@ -38,8 +37,7 @@ void print_m128i_with_string(const char* string, __m128i data)
 		printf("%02x", pointer[i]);
 	printf("]\n");
 }
-void print_m128i_with_string_short(const char* string, __m128i data, int length)
-{
+void print_m128i_with_string_short(const char* string, __m128i data, int length) {
 	unsigned char* pointer = (unsigned char*)&data;
 	int i;
 	printf("%-40s[0x", string);
@@ -53,8 +51,7 @@ typedef struct KEY_SCHEDULE {
 	unsigned int nr;
 }AES_KEY;
 
-inline __m128i AES_128_ASSIST(__m128i temp1, __m128i temp2)
-{
+inline __m128i AES_128_ASSIST(__m128i temp1, __m128i temp2) {
 	__m128i temp3;
 	temp2 = _mm_shuffle_epi32(temp2, 0xff);
 	temp3 = _mm_slli_si128(temp1, 0x4);
@@ -66,8 +63,7 @@ inline __m128i AES_128_ASSIST(__m128i temp1, __m128i temp2)
 	temp1 = _mm_xor_si128(temp1, temp2);
 	return temp1;
 }
-void AES_128_Key_Expansion(const unsigned char* userkey, unsigned char* key)
-{
+void AES_128_Key_Expansion(const unsigned char* userkey, unsigned char* key) {
 	__m128i temp1, temp2;
 	__m128i* Key_Schedule = (__m128i*)key;
 
@@ -105,8 +101,7 @@ void AES_128_Key_Expansion(const unsigned char* userkey, unsigned char* key)
 	Key_Schedule[10] = temp1;
 }
 
-int AES_set_encrypt_key(const unsigned char* userKey,const int bits,AES_KEY* key)
-{
+int AES_set_encrypt_key(const unsigned char* userKey, const int bits, AES_KEY* key) {
 	if (!userKey || !key)
 		return -1;
 	if (bits == 128)
@@ -151,12 +146,7 @@ int AES_set_decrypt_key(const unsigned char* userKey, const int bits, AES_KEY* k
 }
 
 
-void AES_ECB_encrypt(const unsigned char* in, //pointer to the PLAINTEXT
-	unsigned char* out, //pointer to the CIPHERTEXT buffer
-	unsigned long length, //text length in bytes
-	const char* key, //pointer to the expanded key schedule
-	int number_of_rounds) //number of AES rounds 10,12 or 14
-{
+void AES_ECB_encrypt(const unsigned char* in, unsigned char* out, unsigned long length, const char* key, int number_of_rounds) {
 	__m128i tmp;
 	int i, j;
 	if (length % 16)
@@ -173,12 +163,7 @@ void AES_ECB_encrypt(const unsigned char* in, //pointer to the PLAINTEXT
 		_mm_storeu_si128(&((__m128i*)out)[i], tmp);
 	}
 }
-void AES_ECB_decrypt(const unsigned char* in, //pointer to the CIPHERTEXT
-	unsigned char* out, //pointer to the DECRYPTED TEXT buffer
-	unsigned long length, //text length in bytes
-	const char* key, //pointer to the expanded key schedule
-	int number_of_rounds) //number of AES rounds 10,12 or 14
-{
+void AES_ECB_decrypt(const unsigned char* in, unsigned char* out, unsigned long length, const char* key, int number_of_rounds) {
 	__m128i tmp;
 	int i, j;
 	if (length % 16)
