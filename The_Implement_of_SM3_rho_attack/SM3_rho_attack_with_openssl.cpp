@@ -1,6 +1,5 @@
 #include"openssl/evp.h"
 #include"openssl/rsa.h"
-#include<iostream>
 #define MAX 32768
 #define F(x) ((x*x+128)%MAX)
 
