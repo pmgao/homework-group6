@@ -45,11 +45,10 @@ uint64_t inttohex(uint64_t aa, uint8_t* buffer)
 
 int main()
 {
-	uint8_t tinput[256] = "abcddef01234569";
-	uint64_t tlen = 23;
+	string tinput = "abcdef01234569";
 	uint8_t tagart[32];
 	uint8_t input[256] = "";
-	sm3_openssl(tinput, tlen, tagart);
+	sm3_openssl(tinput.c_str(), tinput.size(), tagart);
 	uint64_t ilen = 0;
 	uint8_t output[32];
 	uint64_t i = 0;
