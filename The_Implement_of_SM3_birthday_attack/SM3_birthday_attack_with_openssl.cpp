@@ -1,8 +1,8 @@
 #include<openssl/evp.h>
 #include<openssl/rsa.h>
-#include<iostream>
+#include<string>
+using std::string;
 
-using namespace std;
 uint64_t sm3_openssl(const void* message, size_t len, uint8_t* hash)
 {
 	EVP_MD_CTX* md_ctx;
@@ -47,10 +47,11 @@ int main()
 {
 	string tinput = "abcdef01234569";
 	uint8_t tagart[32];
-	uint8_t input[256] = "";
 	sm3_openssl(tinput.c_str(), tinput.size(), tagart);
-	uint64_t ilen = 0;
+
+	uint8_t input[256] = "";
 	uint8_t output[32];
+	uint64_t ilen = 0;
 	uint64_t i = 0;
 	clock_t start, end;
 	start = clock();
