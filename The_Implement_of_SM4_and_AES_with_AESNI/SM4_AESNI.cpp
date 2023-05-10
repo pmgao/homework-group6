@@ -3,13 +3,14 @@
 #include<intrin.h>
 
 #define rotl32(value, shift) ((value << shift) | value >> (32 - shift))
-
-
+#define ROTL_EPI32(a, n) _mm_xor_si128(_mm_slli_epi32(a, n), _mm_srli_epi32(a, 32 - n))
 #define XOR3(a, b, c) _mm_xor_si128(a, _mm_xor_si128(b, c))
 #define XOR4(a, b, c, d) _mm_xor_si128(a, XOR3(b, c, d))
 #define XOR5(a, b, c, d, e) _mm_xor_si128(a, XOR4(b, c, d, e))
 #define XOR6(a, b, c, d, e, f) _mm_xor_si128(a, XOR5(b, c, d, e, f))
-#define ROTL_EPI32(a, n) _mm_xor_si128(_mm_slli_epi32(a, n), _mm_srli_epi32(a, 32 - n))
+#define MulMatrix(x, higherMask, lowerMask) \
+    (_mm_xor_si128(_mm_shuffle_epi8(lowerMask, _mm_and_si128(x, _mm_set1_epi32(0x0f0f0f0f))), \
+                    _mm_shuffle_epi8(higherMask, _mm_and_si128(_mm_srli_epi16(x, 4), _mm_set1_epi32(0x0f0f0f0f)))))
 
 
 #define LOAD_KEY(index)																									   \
@@ -41,17 +42,16 @@
 #define SM4_ITERATION(index)                                                 \
     do {                                                                     \
         __m128i k = _mm_set1_epi32((enc == 0) ? rk[index] : rk[31 - index]); \
-        temp = XOR4(Block[1], Block[2], Block[3], k);                                     \
-        temp = SM4_SBox(temp);                                                 \
-        temp = XOR6(Block[0], temp, ROTL_EPI32(temp, 2),                            \
-            ROTL_EPI32(temp, 10), ROTL_EPI32(temp, 18),                        \
-            ROTL_EPI32(temp, 24));                                            \
-        Block[0] = Block[1];                                                         \
-        Block[1] = Block[2];                                                         \
-        Block[2] = Block[3];                                                         \
-        Block[3] = temp;                                                          \
+        temp = XOR4(Block[1], Block[2], Block[3], k);                        \
+        temp = SM4_SBox_TO_AES(temp);                                        \
+        temp = XOR6(Block[0], temp, ROTL_EPI32(temp, 2),                     \
+            ROTL_EPI32(temp, 10), ROTL_EPI32(temp, 18),                      \
+            ROTL_EPI32(temp, 24));                                           \
+        Block[0] = Block[1];                                                 \
+        Block[1] = Block[2];                                                 \
+        Block[2] = Block[3];                                                 \
+        Block[3] = temp;                                                     \
     } while (0)
-
 #define UNROLL_LOOP_31_0(STATEMENT) \
     STATEMENT(0);\
     STATEMENT(1);\
@@ -131,19 +131,15 @@ inline static void SM4_KeyInit(uint8_t* key, uint32_t* rk) {
 	UNROLL_LOOP_31_0(KEY_INIT_ITERATION);
 }
 
-inline static __m128i MulMatrix(__m128i x, __m128i higherMask, __m128i lowerMask) {
-	__m128i tmp1, tmp2;
-	__m128i andMask = _mm_set1_epi32(0x0f0f0f0f);
-	tmp2 = _mm_srli_epi16(x, 4);
-	tmp1 = _mm_and_si128(x, andMask);
-	tmp2 = _mm_and_si128(tmp2, andMask);
-	tmp1 = _mm_shuffle_epi8(lowerMask, tmp1);
-	tmp2 = _mm_shuffle_epi8(higherMask, tmp2);
-	tmp1 = _mm_xor_si128(tmp1, tmp2);
-	return tmp1;
+inline static __m128i MulMatrixToAES(__m128i x) {
+    __m128i higherMask = _mm_set_epi8(0x22, 0x58, 0x1a, 0x60, 0x02, 0x78, 0x3a, 0x40, 0x62, 0x18,
+        0x5a, 0x20, 0x42, 0x38, 0x7a, 0x00);
+    __m128i lowerMask = _mm_set_epi8(0xe2, 0x28, 0x95, 0x5f, 0x69, 0xa3, 0x1e, 0xd4, 0x36, 0xfc,
+        0x41, 0x8b, 0xbd, 0x77, 0xca, 0x00);
+    return MulMatrix(x, higherMask, lowerMask);
 }
 
-inline static __m128i MulMatrixATA(__m128i x) {
+inline static __m128i MulMatrixBack(__m128i x) {
 	__m128i higherMask = _mm_set_epi8(0x14, 0x07, 0xc6, 0xd5, 0x6c, 0x7f, 0xbe, 0xad, 0xb9, 0xaa,
 		0x6b, 0x78, 0xc1, 0xd2, 0x13, 0x00);
 	__m128i lowerMask = _mm_set_epi8(0xd8, 0xb8, 0xfa, 0x9a, 0xc5, 0xa5, 0xe7, 0x87, 0x5f, 0x3f,
@@ -151,31 +147,15 @@ inline static __m128i MulMatrixATA(__m128i x) {
 	return MulMatrix(x, higherMask, lowerMask);
 }
 
-inline static __m128i MulMatrixTA(__m128i x) {
-	__m128i higherMask = _mm_set_epi8(0x22, 0x58, 0x1a, 0x60, 0x02, 0x78, 0x3a, 0x40, 0x62, 0x18,
-		0x5a, 0x20, 0x42, 0x38, 0x7a, 0x00);
-	__m128i lowerMask = _mm_set_epi8(0xe2, 0x28, 0x95, 0x5f, 0x69, 0xa3, 0x1e, 0xd4, 0x36, 0xfc,
-		0x41, 0x8b, 0xbd, 0x77, 0xca, 0x00);
-	return MulMatrix(x, higherMask, lowerMask);
-}
-
-inline static __m128i AddTC(__m128i x) {
-	__m128i TC = _mm_set1_epi8(0b00100011);
-	return _mm_xor_si128(x, TC);
-}
-
-inline static __m128i AddATAC(__m128i x) {
-	__m128i ATAC = _mm_set1_epi8(0b00111011);
-	return _mm_xor_si128(x, ATAC);
-}
-
-inline static __m128i SM4_SBox(__m128i x) {
-	__m128i MASK = _mm_set_epi8(0x03, 0x06, 0x09, 0x0c, 0x0f, 0x02, 0x05, 0x08,
+inline static __m128i SM4_SBox_TO_AES(__m128i x) {
+	__m128i mask = _mm_set_epi8(0x03, 0x06, 0x09, 0x0c, 0x0f, 0x02, 0x05, 0x08,
 		0x0b, 0x0e, 0x01, 0x04, 0x07, 0x0a, 0x0d, 0x00);
-	x = _mm_shuffle_epi8(x, MASK);
-	x = AddTC(MulMatrixTA(x));
+
+	x = _mm_shuffle_epi8(x, mask);
+	x = _mm_xor_si128(MulMatrixToAES(x), _mm_set1_epi8(0b00100011));
 	x = _mm_aesenclast_si128(x, _mm_setzero_si128());
-	return AddATAC(MulMatrixATA(x));
+
+	return _mm_xor_si128(MulMatrixBack(x), _mm_set1_epi8(0b00111011));
 }
 
 void SM4_AESNI(uint8_t* in, uint8_t* out, uint32_t* rk, bool enc) {
