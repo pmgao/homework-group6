@@ -163,12 +163,12 @@ inline static __m128i SM4_SBox_TO_AES(__m128i x) {
 }
 
 void SM4_AESNI(uint8_t* in, uint8_t* out, uint32_t* rk, bool enc) {
-    __declspec("xmm0") __m128i Block0;
-    __declspec("xmm1") __m128i Block1;
-    __declspec("xmm2") __m128i Block2;
-    __declspec("xmm3") __m128i Block3;
-    __declspec("xmm4") __m128i temp;
-    __declspec("xmm5") __m128i vindex;
+    __m128i Block0;
+    __m128i Block1;
+    __m128i Block2;
+    __m128i Block3;
+    __m128i temp;
+    __m128i vindex;
 
     temp = _mm_loadu_si128((__m128i*)in);
     vindex = _mm_setr_epi8(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
