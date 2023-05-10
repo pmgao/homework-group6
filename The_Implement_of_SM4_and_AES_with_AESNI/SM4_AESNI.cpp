@@ -4,6 +4,7 @@
 #include<chrono>
 using namespace std::chrono;
 
+#define max_threads
 #define rotl32(value, shift) ((value << shift) | value >> (32 - shift))
 #define ROTL_EPI32(a, n) _mm_xor_si128(_mm_slli_epi32(a, n), _mm_srli_epi32(a, 32 - n))
 #define XOR3(a, b, c) _mm_xor_si128(a, _mm_xor_si128(b, c))
@@ -43,15 +44,15 @@ using namespace std::chrono;
 #define SM4_ITERATION(index)                                                 \
     do {                                                                     \
         __m128i k = _mm_set1_epi32((enc == 0) ? rk[index] : rk[31 - index]); \
-        temp = XOR4(Block[1], Block[2], Block[3], k);                        \
+        temp = XOR4(Block1, Block2, Block3, k);                        \
         temp = SM4_SBox_TO_AES(temp);                                        \
-        temp = XOR6(Block[0], temp, ROTL_EPI32(temp, 2),                     \
+        temp = XOR6(Block0, temp, ROTL_EPI32(temp, 2),                     \
             ROTL_EPI32(temp, 10), ROTL_EPI32(temp, 18),                      \
             ROTL_EPI32(temp, 24));                                           \
-        Block[0] = Block[1];                                                 \
-        Block[1] = Block[2];                                                 \
-        Block[2] = Block[3];                                                 \
-        Block[3] = temp;                                                     \
+        Block0 = Block1;                                                 \
+        Block1 = Block2;                                                 \
+        Block2 = Block3;                                                 \
+        Block3 = temp;                                                     \
     } while (0)
 
 #define UNROLL_LOOP_31_0(STATEMENT) \
@@ -123,14 +124,15 @@ uint8_t SBox[256] = {
 
 
 inline static void SM4_KeyInit(uint8_t* key, uint32_t* rk) {
-	uint32_t k[4];
-	uint32_t tmp;
-	uint8_t* tmp_ptr8 = (uint8_t*)&tmp;
-	LOAD_KEY(0);
-	LOAD_KEY(1);
-	LOAD_KEY(2);
-	LOAD_KEY(3);
-	UNROLL_LOOP_31_0(KEY_INIT_ITERATION);
+    uint32_t k[4];
+    uint32_t tmp;
+    uint8_t* tmp_ptr8 = (uint8_t*)&tmp;
+    LOAD_KEY(0);
+    LOAD_KEY(1);
+    LOAD_KEY(2);
+    LOAD_KEY(3);
+    UNROLL_LOOP_31_0(KEY_INIT_ITERATION);
+
 }
 
 inline static __m128i MulMatrixToAES(__m128i x) {
@@ -142,77 +144,81 @@ inline static __m128i MulMatrixToAES(__m128i x) {
 }
 
 inline static __m128i MulMatrixBack(__m128i x) {
-	__m128i higherMask = _mm_set_epi8(0x14, 0x07, 0xc6, 0xd5, 0x6c, 0x7f, 0xbe, 0xad, 0xb9, 0xaa,
-		0x6b, 0x78, 0xc1, 0xd2, 0x13, 0x00);
-	__m128i lowerMask = _mm_set_epi8(0xd8, 0xb8, 0xfa, 0x9a, 0xc5, 0xa5, 0xe7, 0x87, 0x5f, 0x3f,
-		0x7d, 0x1d, 0x42, 0x22, 0x60, 0x00);
-	return MulMatrix(x, higherMask, lowerMask);
+    __m128i higherMask = _mm_set_epi8(0x14, 0x07, 0xc6, 0xd5, 0x6c, 0x7f, 0xbe, 0xad, 0xb9, 0xaa,
+        0x6b, 0x78, 0xc1, 0xd2, 0x13, 0x00);
+    __m128i lowerMask = _mm_set_epi8(0xd8, 0xb8, 0xfa, 0x9a, 0xc5, 0xa5, 0xe7, 0x87, 0x5f, 0x3f,
+        0x7d, 0x1d, 0x42, 0x22, 0x60, 0x00);
+    return MulMatrix(x, higherMask, lowerMask);
 }
 
 inline static __m128i SM4_SBox_TO_AES(__m128i x) {
-	__m128i mask = _mm_set_epi8(0x03, 0x06, 0x09, 0x0c, 0x0f, 0x02, 0x05, 0x08,
-		0x0b, 0x0e, 0x01, 0x04, 0x07, 0x0a, 0x0d, 0x00);
+    __m128i mask = _mm_set_epi8(0x03, 0x06, 0x09, 0x0c, 0x0f, 0x02, 0x05, 0x08,
+        0x0b, 0x0e, 0x01, 0x04, 0x07, 0x0a, 0x0d, 0x00);
 
-	x = _mm_shuffle_epi8(x, mask);
-	x = _mm_xor_si128(MulMatrixToAES(x), _mm_set1_epi8(0b00100011));
-	x = _mm_aesenclast_si128(x, _mm_setzero_si128());
+    x = _mm_shuffle_epi8(x, mask);
+    x = _mm_xor_si128(MulMatrixToAES(x), _mm_set1_epi8(0b00100011));
+    x = _mm_aesenclast_si128(x, _mm_setzero_si128());
 
-	return _mm_xor_si128(MulMatrixBack(x), _mm_set1_epi8(0b00111011));
+    return _mm_xor_si128(MulMatrixBack(x), _mm_set1_epi8(0b00111011));
 }
 
 void SM4_AESNI(uint8_t* in, uint8_t* out, uint32_t* rk, bool enc) {
-	__m128i Block[4], temp;
-	__m128i vindex;
-	temp = _mm_loadu_si128((__m128i*)in);
+    __declspec("xmm0") __m128i Block0;
+    __declspec("xmm1") __m128i Block1;
+    __declspec("xmm2") __m128i Block2;
+    __declspec("xmm3") __m128i Block3;
+    __declspec("xmm4") __m128i temp;
+    __declspec("xmm5") __m128i vindex;
 
-	vindex = _mm_setr_epi8(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
-	Block[0] = _mm_unpacklo_epi64(_mm_unpacklo_epi32(temp, temp), _mm_unpacklo_epi32(temp, temp));
-	Block[1] = _mm_unpackhi_epi64(_mm_unpacklo_epi32(temp, temp), _mm_unpacklo_epi32(temp, temp));
-	Block[2] = _mm_unpacklo_epi64(_mm_unpackhi_epi32(temp, temp), _mm_unpackhi_epi32(temp, temp));
-	Block[3] = _mm_unpackhi_epi64(_mm_unpackhi_epi32(temp, temp), _mm_unpackhi_epi32(temp, temp));
-	Block[0] = _mm_shuffle_epi8(Block[0], vindex);
-	Block[1] = _mm_shuffle_epi8(Block[1], vindex);
-	Block[2] = _mm_shuffle_epi8(Block[2], vindex);
-	Block[3] = _mm_shuffle_epi8(Block[3], vindex);
-	UNROLL_LOOP_31_0(SM4_ITERATION);
+    temp = _mm_loadu_si128((__m128i*)in);
+    vindex = _mm_setr_epi8(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
+    Block0 = _mm_unpacklo_epi64(_mm_unpacklo_epi32(temp, temp), _mm_unpacklo_epi32(temp, temp));
+    Block1 = _mm_unpackhi_epi64(_mm_unpacklo_epi32(temp, temp), _mm_unpacklo_epi32(temp, temp));
+    Block2 = _mm_unpacklo_epi64(_mm_unpackhi_epi32(temp, temp), _mm_unpackhi_epi32(temp, temp));
+    Block3 = _mm_unpackhi_epi64(_mm_unpackhi_epi32(temp, temp), _mm_unpackhi_epi32(temp, temp));
+    Block0 = _mm_shuffle_epi8(Block0, vindex);
+    Block1 = _mm_shuffle_epi8(Block1, vindex);
+    Block2 = _mm_shuffle_epi8(Block2, vindex);
+    Block3 = _mm_shuffle_epi8(Block3, vindex);
+    UNROLL_LOOP_31_0(SM4_ITERATION);
 
-	Block[0] = _mm_shuffle_epi8(Block[0], vindex);
-	Block[1] = _mm_shuffle_epi8(Block[1], vindex);
-	Block[2] = _mm_shuffle_epi8(Block[2], vindex);
-	Block[3] = _mm_shuffle_epi8(Block[3], vindex);
-	_mm_storeu_si128((__m128i*)out, _mm_unpacklo_epi64(_mm_unpacklo_epi32(Block[3], Block[2]), _mm_unpacklo_epi32(Block[1], Block[0])));
+    Block0 = _mm_shuffle_epi8(Block0, vindex);
+    Block1 = _mm_shuffle_epi8(Block1, vindex);
+    Block2 = _mm_shuffle_epi8(Block2, vindex);
+    Block3 = _mm_shuffle_epi8(Block3, vindex);
+    _mm_storeu_si128((__m128i*)out, _mm_unpacklo_epi64(_mm_unpacklo_epi32(Block3, Block2), _mm_unpacklo_epi32(Block1, Block0)));
 }
 
 int main() {
-	uint8_t in[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
-	uint8_t key[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
-	uint32_t rk[32];
+    uint8_t in[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
+    uint8_t key[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
+    uint32_t rk[32];
     steady_clock::time_point start, end;
 
-	SM4_KeyInit(key, rk);
-    
+    SM4_KeyInit(key, rk);
+
     start = steady_clock::now();
-	SM4_AESNI(in, in, rk, 0);
+    SM4_AESNI(in, in, rk, 0);
     end = steady_clock::now();
     printf("%lld us for encryption\n", duration_cast<microseconds>(end - start).count());
 
-	printf("Cipher text:\n");
-	for (int i = 0; i < 16; i++) {
-		printf("%02x ", in[i]);
-	}
-	printf("\n\n");
+    printf("Cipher text:\n");
+    for (int i = 0; i < 16; i++) {
+        printf("%02x ", in[i]);
+    }
+    printf("\n\n");
 
-	
+
     start = steady_clock::now();
     SM4_AESNI(in, in, rk, 1);
     end = steady_clock::now();
     printf("%lld us for decryption\n", duration_cast<microseconds>(end - start).count());
 
     printf("Plain text:\n");
-	for (int i = 0; i < 16; i++) {
-		printf("%02x ", in[i]);
-	}
+    for (int i = 0; i < 16; i++) {
+        printf("%02x ", in[i]);
+    }
     printf("\n\n");
 
-	return 0;
+    return 0;
 }
