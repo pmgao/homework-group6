@@ -1,6 +1,8 @@
 #include<stdint.h>
 #include<stdio.h>
 #include<intrin.h>
+#include<chrono>
+using namespace std::chrono;
 
 #define rotl32(value, shift) ((value << shift) | value >> (32 - shift))
 #define ROTL_EPI32(a, n) _mm_xor_si128(_mm_slli_epi32(a, n), _mm_srli_epi32(a, 32 - n))
@@ -11,7 +13,6 @@
 #define MulMatrix(x, higherMask, lowerMask) \
     (_mm_xor_si128(_mm_shuffle_epi8(lowerMask, _mm_and_si128(x, _mm_set1_epi32(0x0f0f0f0f))), \
                     _mm_shuffle_epi8(higherMask, _mm_and_si128(_mm_srli_epi16(x, 4), _mm_set1_epi32(0x0f0f0f0f)))))
-
 
 #define LOAD_KEY(index)																									   \
     do {                                                             													   \
@@ -52,6 +53,7 @@
         Block[2] = Block[3];                                                 \
         Block[3] = temp;                                                     \
     } while (0)
+
 #define UNROLL_LOOP_31_0(STATEMENT) \
     STATEMENT(0);\
     STATEMENT(1);\
@@ -185,22 +187,32 @@ int main() {
 	uint8_t in[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
 	uint8_t key[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
 	uint32_t rk[32];
+    steady_clock::time_point start, end;
 
 	SM4_KeyInit(key, rk);
+    
+    start = steady_clock::now();
 	SM4_AESNI(in, in, rk, 0);
+    end = steady_clock::now();
+    printf("%lld us for encryption\n", duration_cast<microseconds>(end - start).count());
+
 	printf("Cipher text:\n");
 	for (int i = 0; i < 16; i++) {
 		printf("%02x ", in[i]);
 	}
-	printf("\n");
+	printf("\n\n");
 
+	
+    start = steady_clock::now();
+    SM4_AESNI(in, in, rk, 1);
+    end = steady_clock::now();
+    printf("%lld us for decryption\n", duration_cast<microseconds>(end - start).count());
 
-	printf("Plain text:\n");
-	SM4_AESNI(in, in, rk, 1);
+    printf("Plain text:\n");
 	for (int i = 0; i < 16; i++) {
 		printf("%02x ", in[i]);
 	}
-	printf("\n");
+    printf("\n\n");
 
 	return 0;
 }
