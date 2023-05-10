@@ -9,14 +9,13 @@
 #define XOR4(a, b, c, d) _mm_xor_si128(a, XOR3(b, c, d))
 #define XOR5(a, b, c, d, e) _mm_xor_si128(a, XOR4(b, c, d, e))
 #define XOR6(a, b, c, d, e, f) _mm_xor_si128(a, XOR5(b, c, d, e, f))
-#define ROTL_EPI32(a, n) \
-    _mm_xor_si128(_mm_slli_epi32(a, n), _mm_srli_epi32(a, 32 - n))
+#define ROTL_EPI32(a, n) _mm_xor_si128(_mm_slli_epi32(a, n), _mm_srli_epi32(a, 32 - n))
 
 
-#define LOAD_KEY(index)                                              \
-    do {                                                             \
+#define LOAD_KEY(index)																									   \
+    do {                                                             													   \
         k[index] = (key[4 * index] << 24) | (key[4 * index + 1] << 16) | (key[4 * index + 2] << 8) | (key[4 * index + 3]); \
-        k[index] = k[index] ^ FK[index];                             \
+        k[index] = k[index] ^ FK[index];																				   \
     } while (0)
 
 #define KEY_INIT_ITERATION(index)                                               \
@@ -24,67 +23,67 @@
         tmp = k[1] ^ k[2] ^ k[3] ^ CK[index];                                   \
         tmp = (SBox[tmp >> 24] << 24) | (SBox[(tmp >> 16) & 0xFF] << 16) |      \
               (SBox[(tmp >> 8) & 0xFF] << 8) | (SBox[tmp & 0xFF]);              \
-        rk[index] = k[0] ^ tmp ^ rotl32(tmp, 13) ^ rotl32(tmp, 23);    \
+        rk[index] = k[0] ^ tmp ^ rotl32(tmp, 13) ^ rotl32(tmp, 23);             \
         k[0] = k[1];                                                            \
         k[1] = k[2];                                                            \
         k[2] = k[3];                                                            \
-        k[3] = rk[index];                                              \
+        k[3] = rk[index];                                                       \
     } while (0)
 
-#define SBOX_OPTIMIZE()                 \
-    do {                                \
+#define SBOX_OPTIMIZE()                  \
+    do {                                 \
         tmp_ptr8[0] = SBox[tmp_ptr8[0]]; \
         tmp_ptr8[1] = SBox[tmp_ptr8[1]]; \
         tmp_ptr8[2] = SBox[tmp_ptr8[2]]; \
         tmp_ptr8[3] = SBox[tmp_ptr8[3]]; \
     } while (0)
 
-#define SM4_ITERATION(index)                                                                \
-    do {                                                                                     \
+#define SM4_ITERATION(index)                                                 \
+    do {                                                                     \
         __m128i k = _mm_set1_epi32((enc == 0) ? rk[index] : rk[31 - index]); \
-        Tmp[0] = XOR4(X[1], X[2], X[3], k);                                               \
-        Tmp[0] = SM4_SBox(Tmp[0]);                                                           \
-        Tmp[0] = XOR6(X[0], Tmp[0], ROTL_EPI32(Tmp[0], 2),                             \
-            ROTL_EPI32(Tmp[0], 10), ROTL_EPI32(Tmp[0], 18),                            \
-            ROTL_EPI32(Tmp[0], 24));                                                      \
-        X[0] = X[1];                                                                         \
-        X[1] = X[2];                                                                         \
-        X[2] = X[3];                                                                         \
-        X[3] = Tmp[0];                                                                       \
+        temp = XOR4(Block[1], Block[2], Block[3], k);                                     \
+        temp = SM4_SBox(temp);                                                 \
+        temp = XOR6(Block[0], temp, ROTL_EPI32(temp, 2),                            \
+            ROTL_EPI32(temp, 10), ROTL_EPI32(temp, 18),                        \
+            ROTL_EPI32(temp, 24));                                            \
+        Block[0] = Block[1];                                                         \
+        Block[1] = Block[2];                                                         \
+        Block[2] = Block[3];                                                         \
+        Block[3] = temp;                                                          \
     } while (0)
 
 #define UNROLL_LOOP_31_0(STATEMENT) \
-    STATEMENT(0); \
-    STATEMENT(1); \
-    STATEMENT(2); \
-    STATEMENT(3); \
-    STATEMENT(4); \
-    STATEMENT(5); \
-    STATEMENT(6); \
-    STATEMENT(7); \
-    STATEMENT(8); \
-    STATEMENT(9); \
-    STATEMENT(10); \
-    STATEMENT(11); \
-    STATEMENT(12); \
-    STATEMENT(13); \
-    STATEMENT(14); \
+    STATEMENT(0);\
+    STATEMENT(1);\
+    STATEMENT(2);\
+    STATEMENT(3);\
+    STATEMENT(4);\
+    STATEMENT(5);\
+    STATEMENT(6);\
+    STATEMENT(7);\
+    STATEMENT(8);\
+    STATEMENT(9);\
+    STATEMENT(10);\
+    STATEMENT(11);\
+    STATEMENT(12);\
+    STATEMENT(13);\
+    STATEMENT(14);\
     STATEMENT(15);\
-    STATEMENT(16); \
-    STATEMENT(17); \
-    STATEMENT(18); \
-    STATEMENT(19); \
-    STATEMENT(20); \
-    STATEMENT(21); \
-    STATEMENT(22); \
-    STATEMENT(23); \
-    STATEMENT(24); \
-    STATEMENT(25); \
-    STATEMENT(26); \
-    STATEMENT(27); \
-    STATEMENT(28); \
-    STATEMENT(29); \
-    STATEMENT(30); \
+    STATEMENT(16);\
+    STATEMENT(17);\
+    STATEMENT(18);\
+    STATEMENT(19);\
+    STATEMENT(20);\
+    STATEMENT(21);\
+    STATEMENT(22);\
+    STATEMENT(23);\
+    STATEMENT(24);\
+    STATEMENT(25);\
+    STATEMENT(26);\
+    STATEMENT(27);\
+    STATEMENT(28);\
+    STATEMENT(29);\
+    STATEMENT(30);\
     STATEMENT(31); 
 
 
@@ -122,123 +121,106 @@ uint8_t SBox[256] = {
 
 
 inline static void SM4_KeyInit(uint8_t* key, uint32_t* rk) {
-    uint32_t k[4];
-    uint32_t tmp;
-    uint8_t* tmp_ptr8 = (uint8_t*)&tmp;
-    LOAD_KEY(0);
-    LOAD_KEY(1);
-    LOAD_KEY(2);
-    LOAD_KEY(3);
-    UNROLL_LOOP_31_0(KEY_INIT_ITERATION);
+	uint32_t k[4];
+	uint32_t tmp;
+	uint8_t* tmp_ptr8 = (uint8_t*)&tmp;
+	LOAD_KEY(0);
+	LOAD_KEY(1);
+	LOAD_KEY(2);
+	LOAD_KEY(3);
+	UNROLL_LOOP_31_0(KEY_INIT_ITERATION);
 }
 
 inline static __m128i MulMatrix(__m128i x, __m128i higherMask, __m128i lowerMask) {
-    __m128i tmp1, tmp2;
-    __m128i andMask = _mm_set1_epi32(0x0f0f0f0f);
-    tmp2 = _mm_srli_epi16(x, 4);
-    tmp1 = _mm_and_si128(x, andMask);
-    tmp2 = _mm_and_si128(tmp2, andMask);
-    tmp1 = _mm_shuffle_epi8(lowerMask, tmp1);
-    tmp2 = _mm_shuffle_epi8(higherMask, tmp2);
-    tmp1 = _mm_xor_si128(tmp1, tmp2);
-    return tmp1;
+	__m128i tmp1, tmp2;
+	__m128i andMask = _mm_set1_epi32(0x0f0f0f0f);
+	tmp2 = _mm_srli_epi16(x, 4);
+	tmp1 = _mm_and_si128(x, andMask);
+	tmp2 = _mm_and_si128(tmp2, andMask);
+	tmp1 = _mm_shuffle_epi8(lowerMask, tmp1);
+	tmp2 = _mm_shuffle_epi8(higherMask, tmp2);
+	tmp1 = _mm_xor_si128(tmp1, tmp2);
+	return tmp1;
 }
 
 inline static __m128i MulMatrixATA(__m128i x) {
-    __m128i higherMask = _mm_set_epi8(0x14, 0x07, 0xc6, 0xd5, 0x6c, 0x7f, 0xbe, 0xad, 0xb9, 0xaa,
-        0x6b, 0x78, 0xc1, 0xd2, 0x13, 0x00);
-    __m128i lowerMask = _mm_set_epi8(0xd8, 0xb8, 0xfa, 0x9a, 0xc5, 0xa5, 0xe7, 0x87, 0x5f, 0x3f,
-        0x7d, 0x1d, 0x42, 0x22, 0x60, 0x00);
-    return MulMatrix(x, higherMask, lowerMask);
+	__m128i higherMask = _mm_set_epi8(0x14, 0x07, 0xc6, 0xd5, 0x6c, 0x7f, 0xbe, 0xad, 0xb9, 0xaa,
+		0x6b, 0x78, 0xc1, 0xd2, 0x13, 0x00);
+	__m128i lowerMask = _mm_set_epi8(0xd8, 0xb8, 0xfa, 0x9a, 0xc5, 0xa5, 0xe7, 0x87, 0x5f, 0x3f,
+		0x7d, 0x1d, 0x42, 0x22, 0x60, 0x00);
+	return MulMatrix(x, higherMask, lowerMask);
 }
 
 inline static __m128i MulMatrixTA(__m128i x) {
-    __m128i higherMask = _mm_set_epi8(0x22, 0x58, 0x1a, 0x60, 0x02, 0x78, 0x3a, 0x40, 0x62, 0x18,
-        0x5a, 0x20, 0x42, 0x38, 0x7a, 0x00);
-    __m128i lowerMask = _mm_set_epi8(0xe2, 0x28, 0x95, 0x5f, 0x69, 0xa3, 0x1e, 0xd4, 0x36, 0xfc,
-        0x41, 0x8b, 0xbd, 0x77, 0xca, 0x00);
-    return MulMatrix(x, higherMask, lowerMask);
+	__m128i higherMask = _mm_set_epi8(0x22, 0x58, 0x1a, 0x60, 0x02, 0x78, 0x3a, 0x40, 0x62, 0x18,
+		0x5a, 0x20, 0x42, 0x38, 0x7a, 0x00);
+	__m128i lowerMask = _mm_set_epi8(0xe2, 0x28, 0x95, 0x5f, 0x69, 0xa3, 0x1e, 0xd4, 0x36, 0xfc,
+		0x41, 0x8b, 0xbd, 0x77, 0xca, 0x00);
+	return MulMatrix(x, higherMask, lowerMask);
 }
 
 inline static __m128i AddTC(__m128i x) {
-    __m128i TC = _mm_set1_epi8(0b00100011);
-    return _mm_xor_si128(x, TC);
+	__m128i TC = _mm_set1_epi8(0b00100011);
+	return _mm_xor_si128(x, TC);
 }
 
 inline static __m128i AddATAC(__m128i x) {
-    __m128i ATAC = _mm_set1_epi8(0b00111011);
-    return _mm_xor_si128(x, ATAC);
+	__m128i ATAC = _mm_set1_epi8(0b00111011);
+	return _mm_xor_si128(x, ATAC);
 }
 
 inline static __m128i SM4_SBox(__m128i x) {
-    __m128i MASK = _mm_set_epi8(0x03, 0x06, 0x09, 0x0c, 0x0f, 0x02, 0x05, 0x08,
-        0x0b, 0x0e, 0x01, 0x04, 0x07, 0x0a, 0x0d, 0x00);
-    x = _mm_shuffle_epi8(x, MASK);
-    x = AddTC(MulMatrixTA(x));
-    x = _mm_aesenclast_si128(x, _mm_setzero_si128());
-    return AddATAC(MulMatrixATA(x));
+	__m128i MASK = _mm_set_epi8(0x03, 0x06, 0x09, 0x0c, 0x0f, 0x02, 0x05, 0x08,
+		0x0b, 0x0e, 0x01, 0x04, 0x07, 0x0a, 0x0d, 0x00);
+	x = _mm_shuffle_epi8(x, MASK);
+	x = AddTC(MulMatrixTA(x));
+	x = _mm_aesenclast_si128(x, _mm_setzero_si128());
+	return AddATAC(MulMatrixATA(x));
 }
 
-void SM4_AESNI_do(uint8_t* in, uint8_t* out, uint32_t* rk, bool enc) {
-    __m128i X[4], Tmp[4];
-    __m128i vindex;
-    Tmp[0] = _mm_loadu_si128((const __m128i*)in + 0);
-    Tmp[1] = _mm_loadu_si128((const __m128i*)in + 1);
-    Tmp[2] = _mm_loadu_si128((const __m128i*)in + 2);
-    Tmp[3] = _mm_loadu_si128((const __m128i*)in + 3);
-    vindex = _mm_setr_epi8(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
-    X[0] = _mm_unpacklo_epi64(_mm_unpacklo_epi32(Tmp[0], Tmp[1]), _mm_unpacklo_epi32(Tmp[2], Tmp[3]));
-    X[1] = _mm_unpackhi_epi64(_mm_unpacklo_epi32(Tmp[0], Tmp[1]), _mm_unpacklo_epi32(Tmp[2], Tmp[3]));
-    X[2] = _mm_unpacklo_epi64(_mm_unpackhi_epi32(Tmp[0], Tmp[1]), _mm_unpackhi_epi32(Tmp[2], Tmp[3]));
-    X[3] = _mm_unpackhi_epi64(_mm_unpackhi_epi32(Tmp[0], Tmp[1]), _mm_unpackhi_epi32(Tmp[2], Tmp[3]));
-    X[0] = _mm_shuffle_epi8(X[0], vindex);
-    X[1] = _mm_shuffle_epi8(X[1], vindex);
-    X[2] = _mm_shuffle_epi8(X[2], vindex);
-    X[3] = _mm_shuffle_epi8(X[3], vindex);
-    UNROLL_LOOP_31_0(SM4_ITERATION);
+void SM4_AESNI(uint8_t* in, uint8_t* out, uint32_t* rk, bool enc) {
+	__m128i Block[4], temp;
+	__m128i vindex;
+	temp = _mm_loadu_si128((const __m128i*)in);
 
-    X[0] = _mm_shuffle_epi8(X[0], vindex);
-    X[1] = _mm_shuffle_epi8(X[1], vindex);
-    X[2] = _mm_shuffle_epi8(X[2], vindex);
-    X[3] = _mm_shuffle_epi8(X[3], vindex);
-    _mm_storeu_si128((__m128i*)out + 0, _mm_unpacklo_epi64(_mm_unpacklo_epi32(X[3], X[2]), _mm_unpacklo_epi32(X[1], X[0])));
-    _mm_storeu_si128((__m128i*)out + 1, _mm_unpackhi_epi64(_mm_unpacklo_epi32(X[3], X[2]), _mm_unpacklo_epi32(X[1], X[0])));
-    _mm_storeu_si128((__m128i*)out + 2, _mm_unpacklo_epi64(_mm_unpackhi_epi32(X[3], X[2]), _mm_unpackhi_epi32(X[1], X[0])));
-    _mm_storeu_si128((__m128i*)out + 3, _mm_unpackhi_epi64(_mm_unpackhi_epi32(X[3], X[2]), _mm_unpackhi_epi32(X[1], X[0])));
-}
+	vindex = _mm_setr_epi8(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
+	Block[0] = _mm_unpacklo_epi64(_mm_unpacklo_epi32(temp, temp), _mm_unpacklo_epi32(temp, temp));
+	Block[1] = _mm_unpackhi_epi64(_mm_unpacklo_epi32(temp, temp), _mm_unpacklo_epi32(temp, temp));
+	Block[2] = _mm_unpacklo_epi64(_mm_unpackhi_epi32(temp, temp), _mm_unpackhi_epi32(temp, temp));
+	Block[3] = _mm_unpackhi_epi64(_mm_unpackhi_epi32(temp, temp), _mm_unpackhi_epi32(temp, temp));
+	Block[0] = _mm_shuffle_epi8(Block[0], vindex);
+	Block[1] = _mm_shuffle_epi8(Block[1], vindex);
+	Block[2] = _mm_shuffle_epi8(Block[2], vindex);
+	Block[3] = _mm_shuffle_epi8(Block[3], vindex);
+	UNROLL_LOOP_31_0(SM4_ITERATION);
 
-void SM4_AESNI_Encrypt(uint8_t* plaintext, uint8_t* ciphertext, uint32_t* rk) {
-    SM4_AESNI_do(plaintext, ciphertext, rk, 0);
-}
-
-void SM4_AESNI_Decrypt(uint8_t* ciphertext, uint8_t* plaintext, uint32_t* rk) {
-    SM4_AESNI_do(ciphertext, plaintext, rk, 1);
+	Block[0] = _mm_shuffle_epi8(Block[0], vindex);
+	Block[1] = _mm_shuffle_epi8(Block[1], vindex);
+	Block[2] = _mm_shuffle_epi8(Block[2], vindex);
+	Block[3] = _mm_shuffle_epi8(Block[3], vindex);
+	_mm_storeu_si128((__m128i*)out + 0, _mm_unpacklo_epi64(_mm_unpacklo_epi32(Block[3], Block[2]), _mm_unpacklo_epi32(Block[1], Block[0])));
 }
 
 int main() {
-    uint8_t in[16 * 8] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
-    uint8_t key[16*8] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
-    uint32_t rk[32];
+	uint8_t in[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
+	uint8_t key[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
+	uint32_t rk[32];
 
-    SM4_KeyInit(key, rk);
-    SM4_AESNI_Encrypt(in, in, rk);
-    printf("C:\n");
-    for (int j = 0; j < 4; j++) {
-        printf("\t");
-        for (int i = 0; i < 16; i++) {
-            printf("%02x ", in[i + 16 * j]);
-        }
-        printf("\n");
-    }
+	SM4_KeyInit(key, rk);
+	SM4_AESNI(in, in, rk, 0);
+	printf("Cipher text:\n");
+	for (int i = 0; i < 16; i++) {
+		printf("%02x ", in[i]);
+	}
+	printf("\n");
 
-    printf("P:\n");
-    SM4_AESNI_Decrypt(in, in, rk);
-    for (int j = 0; j < 4; j++) {
-        printf("\t");
-        for (int i = 0; i < 16; i++) {
-            printf("%02x ", in[i + 16 * j]);
-        }
-        printf("\n");
-    }
-    return 0;
+
+	printf("Plain text:\n");
+	SM4_AESNI(in, in, rk, 1);
+	for (int i = 0; i < 16; i++) {
+		printf("%02x ", in[i]);
+	}
+	printf("\n");
+
+	return 0;
 }
