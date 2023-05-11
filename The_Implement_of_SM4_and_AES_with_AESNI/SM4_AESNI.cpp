@@ -169,7 +169,7 @@ void SM4_AESNI(uint8_t* in, uint8_t* out, uint32_t* rk, bool enc) {
 	Block[1] = _mm_shuffle_epi8(Block[1], vindex);
 	Block[2] = _mm_shuffle_epi8(Block[2], vindex);
 	Block[3] = _mm_shuffle_epi8(Block[3], vindex);
-	_mm_storeu_si128((__m128i*)out + 0, _mm_unpacklo_epi64(_mm_unpacklo_epi32(Block[3], Block[2]), _mm_unpacklo_epi32(Block[1], Block[0])));
+	_mm_storeu_si128((__m128i*)out, _mm_unpacklo_epi64(_mm_unpacklo_epi32(Block[3], Block[2]), _mm_unpacklo_epi32(Block[1], Block[0])));
 }
 
 int main() {
