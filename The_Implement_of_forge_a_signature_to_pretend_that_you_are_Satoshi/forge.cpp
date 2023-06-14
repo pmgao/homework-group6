@@ -3,6 +3,7 @@
 #include <openssl/bn.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+#include <stdio.h>
 
 EC_GROUP* group = EC_GROUP_new_by_curve_name(NID_secp256k1);
 EC_POINT* G = EC_POINT_new(group);
