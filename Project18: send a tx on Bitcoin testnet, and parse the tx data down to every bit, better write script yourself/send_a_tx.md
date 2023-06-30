@@ -2,23 +2,23 @@
 
 新建测试网络收款地址如下，即tb1q34z2uvj2jjyvtwvnkc4mh4q6mly94jhud3hhqr。
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230630111555469.png" alt="image-20230630111555469" style="zoom:50%;" />
+<img src=".\md_image\image-20230630111555469.png" alt="image-20230630111555469" style="zoom:50%;" />
 
 https://coinfaucet.eu/en/btc-testnet/ 在这个网站为我的收款地址申请一些测试比特币。
 
-![image-20230630111652528](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230630111652528.png)
+![image-20230630111652528](.\md_image\image-20230630111652528.png)
 
 之后进入https://live.blockcypher.com 查看该地址所发生的交易信息。
 
-![image-20230630112249421](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230630112249421.png)
+![image-20230630112249421](.\md_image\image-20230630112249421.png)
 
-![image-20230630112825273](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230630112825273.png)
+![image-20230630112825273](.\md_image\image-20230630112825273.png)
 
 可以看出，此时该交易只得到了1次确认，需要累积等待到6次确认之后才可以打包进入测试网络的链上。目前的区块链网络大约耗费10分钟得到对一笔交易的确认，总计需要约60分钟。
 
-![image-20230630121321254](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230630121321254.png)
+![image-20230630121321254](.\md_image\image-20230630121321254.png)
 
-此时，查看此笔交易的区块信息如下所示。![image-20230630131339319](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230630131339319.png)
+此时，查看此笔交易的区块信息如下所示。![image-20230630131339319](.\md_image\image-20230630131339319.png)
 
 
 
