@@ -6,7 +6,7 @@
 
 https://coinfaucet.eu/en/btc-testnet/ 在这个网站为我的收款地址申请一些测试比特币。
 
-![image-20230630111652528](.\md_image\image-20230630111652528.png)
+<img src=".\md_image\image-20230630111652528.png" alt="20230630111652528" style="zoom:100%;" />
 
 之后进入https://live.blockcypher.com 查看该地址所发生的交易信息。
 
