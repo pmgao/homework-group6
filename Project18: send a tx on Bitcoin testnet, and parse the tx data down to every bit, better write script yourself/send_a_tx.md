@@ -10,15 +10,15 @@ https://coinfaucet.eu/en/btc-testnet/ 在这个网站为我的收款地址申请
 
 之后进入https://live.blockcypher.com 查看该地址所发生的交易信息。
 
-![image-20230630112249421](.\md_image\image-20230630112249421.png)
+<img src=".\md_image\image-20230630112249421.png" alt="20230630112249421" style="zoom:100%;" />
 
-![image-20230630112825273](.\md_image\image-20230630112825273.png)
+<img src=".\md_image\image-20230630112825273.png" alt="20230630112825273" style="zoom:100%;" />
 
 可以看出，此时该交易只得到了1次确认，需要累积等待到6次确认之后才可以打包进入测试网络的链上。目前的区块链网络大约耗费10分钟得到对一笔交易的确认，总计需要约60分钟。
 
-![image-20230630121321254](.\md_image\image-20230630121321254.png)
+<img src=".\md_image\image-20230630121321254.png" alt="20230630121321254" style="zoom:100%;" />
 
-此时，查看此笔交易的区块信息如下所示。![image-20230630131339319](.\md_image\image-20230630131339319.png)
+此时，查看此笔交易的区块信息如下所示。<img src=".\md_image\image-20230630131339319.png" alt="20230630131339319" style="zoom:100%;" />
 
 
 
