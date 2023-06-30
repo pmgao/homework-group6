@@ -111,5 +111,5 @@ https://coinfaucet.eu/en/btc-testnet/ 在这个网站为我的收款地址申请
 
 ```
 7、"chain": "BTC.test3"
-表明了此次交易所发生的链
+表明了此次交易发生时所的链
 ```
