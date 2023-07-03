@@ -6,13 +6,6 @@
 
 ![](https://latex.codecogs.com/svg.image?%5Clarge%20%5C%5C%20s%5Ctimes%20(1&plus;d_A)=(k-r%5Ctimes%20d_A)%20%5Cmod%20n%20%5C%5C%20(s&plus;r)%5Ctimes%20d_A=(k-s)%20%5Cmod%20n%20%5C%5C%20((s&plus;r)%5Ctimes%20d_A)G=(k-s)G%20%5Cmod%20n%20%5C%5C%20d_A%5Ctimes%20G=P_A=((s&plus;r)%5E%7B-1%7D(k-s))G%20)
 
-$$
-s\times (1+d_A)=(k-r\times d_A) \mod n \\
-(s+r)\times d_A=(k-s) \mod n \\
-((s+r)\times d_A)G=(k-s)G \mod n \\
-d_A\times G=P_A=((s+r)^{-1}(k-s))G
-$$
-
 
 即可由一组确定的签名值，推导出相应的公私钥，通过此种方法有以下几种优点：
 
