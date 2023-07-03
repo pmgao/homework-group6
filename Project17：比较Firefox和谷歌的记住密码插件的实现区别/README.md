@@ -6,7 +6,7 @@ Firefox与谷歌的记住密码插件最大区别在于Firefox允许用户使用
 
 <img src=".\md_image\f.png" alt="image-20230703174051013" style="zoom: 67%;" />
 
-首先介绍Firefox的处理策略，具体流程可如上图所示(内容来自于https://hacks.mozilla.org/2018/11/firefox-sync-privacy/?_gl=1*ar00f3*_ga*NDA3ODQ0Nzc5LjE2ODgyNjYzNTA.*_ga_2VC139B3XV*MTY4ODM3NzAyNi40LjEuMTY4ODM3NzI4Ni4wLjAuMA..)。
+首先介绍Firefox的处理策略，具体流程可如上图所示(内容来自于https://hacks.mozilla.org/2018/11/firefox-sync-privacy/?_gl=1*ar00f3*_ga*NDA3ODQ0Nzc5LjE2ODgyNjYzNTA.*_ga_2VC139B3XV*MTY4ODM3NzAyNi40LjEuMTY4ODM3NzI4Ni4wLjAuMA.. )。
 
 具体地，一个用户利用只有自己才知道的Password经过PBKDF推导出主密钥，并将其分派给两个固定的HKDF函数，派生出两个新的密钥，其中一个密钥作为参与验证的Token发送给Firefox的服务器，与用户名称共同经过脚本处理后的哈希值与服务器本地所存储的哈希值进行比较，若相同则返回加密数据，否则失败。当用户端接收到数据之后，使用另外一份密钥对该加密数据进行解密(目前所用的是对称密码技术，AES-256-CBC版本)，即可得到解密后的密码内容。
 
