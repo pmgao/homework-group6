@@ -9,9 +9,9 @@ vaesdq_u8(src1, src2)：src2作为轮密钥，进行AK操作、逆向S-BOX替换
 vaesimcq_u8(src)：对输入进行进行逆向列混合操作。
 ```
 
-<img src=".\md_image\process.png" alt="image-20230703171240367" style="zoom:50%;" />
+<img src=".\md_image\process.png" alt="process" style="zoom:50%;" />
 
-<img src=".\md_image\process2.png" alt="image-20230703171631942" style="zoom:50%;" />
+<img src=".\md_image\process2.png" alt="process2" style="zoom:50%;" />
 
 具体加解密流程如上图所示，其中要注意到加密过程的最后一轮不需要列混合操作；解密过程的最一轮不需要列混合操作，且中间8轮对逆向列混合与AK操作互换了顺序，需要先求出RK经过逆向列混合之后的数据再进行AK操作。
 
@@ -31,10 +31,10 @@ uint32_t byte_swap32(uint32_t val) {
 
 运行结果如下图所示。所采用的数据样本来自于Dworkin M J, Barker E B, Nechvatal J R, et al. Advanced encryption standard (AES)[J]. 2001.，加解密结果经过比对均一致。
 
-<img src=".\md_image\example1.png" alt="image-20230703172434442" style="zoom:80%;" />
+<img src=".\md_image\example1.png" alt="example1" style="zoom:80%;" />
 
-<img src=".\md_image\example2.png" alt="image-20230703172518910" style="zoom:80%;" />
+<img src=".\md_image\example2.png" alt="example2" style="zoom:80%;" />
 
-<img src=".\md_image\AES.png" alt="image-20230703171820158" style="zoom:80%;" />
+<img src=".\md_image\AES.png" alt="AES" style="zoom:80%;" />
 
 可以看出，密钥扩展耗时大约为600~700ns，AES一个分组的加解密则耗时240ns左右，如果并行化程度足够高，则对数据进行AES加解密的时间开销可以控制在纳秒级。
