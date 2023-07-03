@@ -4,7 +4,7 @@ Firefox与谷歌的记住密码插件最大区别在于Firefox允许用户使用
 
 ## Firefox
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230703174051013.png" alt="image-20230703174051013" style="zoom: 67%;" />
+<img src=".\md_image\f.png" alt="image-20230703174051013" style="zoom: 67%;" />
 
 首先介绍Firefox的处理策略，具体流程可如上图所示(内容来自于https://hacks.mozilla.org/2018/11/firefox-sync-privacy/?_gl=1*ar00f3*_ga*NDA3ODQ0Nzc5LjE2ODgyNjYzNTA.*_ga_2VC139B3XV*MTY4ODM3NzAyNi40LjEuMTY4ODM3NzI4Ni4wLjAuMA..)。
 
@@ -12,7 +12,7 @@ Firefox与谷歌的记住密码插件最大区别在于Firefox允许用户使用
 
 ## 谷歌
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230703174946993.png" alt="image-20230703174946993" style="zoom:80%;" />
+<img src=".\md_image\g.png" alt="image-20230703174946993" style="zoom:80%;" />
 
 谷歌的具体流程如上图所示，使用的是公钥密码技术，基于离散对数困难问题。当用户每次需要一个不同的密码时，以上流程便需要重新进行。
 
