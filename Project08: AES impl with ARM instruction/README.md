@@ -9,9 +9,9 @@ vaesdq_u8(src1, src2)：src2作为轮密钥，进行AK操作、逆向S-BOX替换
 vaesimcq_u8(src)：对输入进行进行逆向列混合操作。
 ```
 
-<img src=".\md_image\process.png" alt="process" style="zoom:50%;" />
+<img src=".\md_image\process.jpg" alt="process" style="zoom:50%;" />
 
-<img src=".\md_image\process2.png" alt="process2" style="zoom:50%;" />
+<img src=".\md_image\process2.jpg" alt="process2" style="zoom:50%;" />
 
 具体加解密流程如上图所示，其中要注意到加密过程的最后一轮不需要列混合操作；解密过程的最一轮不需要列混合操作，且中间8轮对逆向列混合与AK操作互换了顺序，需要先求出RK经过逆向列混合之后的数据再进行AK操作。
 
