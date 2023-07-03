@@ -4,8 +4,7 @@
 
 流程如上图所示，对于ECDSA签名的输出值(r,s)，私钥d_A，公钥P_A，有：
 
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+![](https://latex.codecogs.com/svg.image?%5Clarge%20%5C%5C%20s%5Ctimes%20(1&plus;d_A)=(k-r%5Ctimes%20d_A)%20%5Cmod%20n%20%5C%5C%20(s&plus;r)%5Ctimes%20d_A=(k-s)%20%5Cmod%20n%20%5C%5C%20((s&plus;r)%5Ctimes%20d_A)G=(k-s)G%20%5Cmod%20n%20%5C%5C%20d_A%5Ctimes%20G=P_A=((s&plus;r)%5E%7B-1%7D(k-s))G%20)
 
 $$
 s\times (1+d_A)=(k-r\times d_A) \mod n \\
