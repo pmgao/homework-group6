@@ -1,6 +1,6 @@
 # report on the application of this deduce technique in Ethereum with ECDSA
 
-![image-20230703214702471](.\md_image\process.png)
+![process](.\md_image\process.png)
 
 流程如上图所示，对于ECDSA签名的输出值(r,s)，私钥d_A，公钥P_A，有：
 $$
