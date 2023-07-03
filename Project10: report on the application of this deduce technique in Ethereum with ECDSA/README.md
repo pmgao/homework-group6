@@ -7,7 +7,7 @@
 ![](https://latex.codecogs.com/svg.image?%5Clarge%20%5C%5C%20s%5Ctimes%20(1&plus;d_A)=(k-r%5Ctimes%20d_A)%20%5Cmod%20n%20%5C%5C%20(s&plus;r)%5Ctimes%20d_A=(k-s)%20%5Cmod%20n%20%5C%5C%20((s&plus;r)%5Ctimes%20d_A)G=(k-s)G%20%5Cmod%20n%20%5C%5C%20d_A%5Ctimes%20G=P_A=((s&plus;r)%5E%7B-1%7D(k-s))G%20)
 
 
-即可由一组确定的签名值，推导出相应的公私钥，通过此种方法有以下几种优点：
+即可由一组确定的签名值，推导出相应的公私钥，而此种deduce技术有以下几种优点：
 
 1、可以减少网络通信的压力，使得签名传输时只需要传输签名值而不需要再传输公钥，减轻了以太坊网络的通信压力。
 
