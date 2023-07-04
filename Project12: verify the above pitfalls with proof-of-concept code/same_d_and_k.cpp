@@ -39,6 +39,7 @@ void init() {
 	BN_hex2bn(&sig2[0], "91282674d71ee9a0395108230967805e5e65856f1d287b33e76717aa312d92a4");
 	BN_hex2bn(&sig2[1], "ba1aca04ed6a8ea5b0c7112bb2b75f41af2ae08a3ade342e96ef020c2ad0494d");
 	BN_hex2bn(&N, "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
+
 }
 
 void same_d_and_k() {
@@ -53,18 +54,20 @@ void same_d_and_k() {
 	BIGNUM* e1 = BN_new();
 	BN_hex2bn(&e1, "c2f2d91c2a31954e293fe038488e1a411a2fd90c0196c126c918852e3e80a7d9");
 
-	BN_mul(temp1, sig1[1], sig2[1], BN_CTX_new());
-	BN_mul(temp2, sig1[1], sig2[0], BN_CTX_new());
+	BN_mul(temp1, sig2[1], sig1[1], BN_CTX_new());
+	BN_mod_mul(temp2, sig2[1], sig1[0], N, BN_CTX_new());
 	BN_add(temp3, temp1, temp2);
-	BN_mod_sub(temp4, sig1[0], temp3, N, BN_CTX_new());
+	BN_sub(temp4, sig2[0], temp3);
 	BN_hex2bn(&temp5, "1");
-	temp4 = BN_mod_inverse(temp5, temp4, N, BN_CTX_new());
+	
 
-	BN_mod_mul(temp5, sig1[1], sig2[1], N, BN_CTX_new());
-	BN_mod_sub(temp6, temp5, e1, N, BN_CTX_new());
-	BN_mod_mul(temp7, temp6, temp4, N, BN_CTX_new());
+	BN_mul(temp5, sig2[1], sig1[1], BN_CTX_new());
+	BN_nnmod(e1, e1, N, BN_CTX_new());
+	BN_sub(temp6, temp5, e1);
+	
+	BN_mod_mul(temp7, BN_mod_inverse(temp5, temp4, N, BN_CTX_new()), temp6, N, BN_CTX_new());
+
 	cout << BN_cmp(temp7, SK1);
-
 }
 
 int main(void) {
@@ -72,3 +75,4 @@ int main(void) {
 	same_d_and_k();
 	return 0;
 }
+
