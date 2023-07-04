@@ -18,8 +18,6 @@ using namespace std;
 BIGNUM* SK1 = BN_new();
 BIGNUM* PK1[2];
 BIGNUM* sig1[2];
-BIGNUM* SK2 = BN_new();
-BIGNUM* PK2[2];
 BIGNUM* sig2[2];
 BIGNUM* N = BN_new();
 
@@ -29,10 +27,8 @@ void init() {
 	sig1[0] = BN_new();
 	sig1[1] = BN_new();
 
-	PK1[0] = BN_new();
-	PK1[1] = BN_new();
-	sig1[0] = BN_new();
-	sig1[1] = BN_new();
+	sig2[0] = BN_new();
+	sig2[1] = BN_new();
 
 	BN_hex2bn(&PK1[0], "2b4a8cabec11ba85b0cbe50ddd5a36f9449a79fdee442e11333a49ef32c9e5cb");
 	BN_hex2bn(&PK1[1], "668c94526e0b8a25f2bc0ad63ef119b2091a02496a75001da1dc2420c08830f9");
@@ -45,7 +41,7 @@ void init() {
 	BN_hex2bn(&N, "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
 }
 
-void reusing_k() {
+void same_d_and_k() {
 	BIGNUM* da = BN_new();
 	BIGNUM* temp1 = BN_new();
 	BIGNUM* temp2 = BN_new();
@@ -63,6 +59,7 @@ void reusing_k() {
 	BN_mod_sub(temp4, sig1[0], temp3, N, BN_CTX_new());
 	BN_hex2bn(&temp5, "1");
 	temp4 = BN_mod_inverse(temp5, temp4, N, BN_CTX_new());
+
 	BN_mod_mul(temp5, sig1[1], sig2[1], N, BN_CTX_new());
 	BN_mod_sub(temp6, temp5, e1, N, BN_CTX_new());
 	BN_mod_mul(temp7, temp6, temp4, N, BN_CTX_new());
@@ -72,6 +69,6 @@ void reusing_k() {
 
 int main(void) {
 	init();
-	reusing_k();
+	same_d_and_k();
 	return 0;
 }
