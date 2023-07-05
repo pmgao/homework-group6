@@ -12,10 +12,10 @@
 
 ![](https://latex.codecogs.com/svg.image?(x,x'))中的x为字符串202100460055，而另外一个元素x'自“1”开始不断累加，对其进行穷举。
 ```c++
-		itoa(i, (char*)input, 10);
-		ilen = sizeof(input);
-		sm3_openssl(input, ilen, output);
-    		i++;
+	itoa(i, (char*)input, 10);
+	ilen = sizeof(input);
+	sm3_openssl(input, ilen, output);
+	i++;
 ```
 实验结果如下表所示。
 
