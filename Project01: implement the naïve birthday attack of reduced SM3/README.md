@@ -15,7 +15,7 @@
 		itoa(i, (char*)input, 10);
 		ilen = sizeof(input);
 		sm3_openssl(input, ilen, output);
-    i++;
+    		i++;
 ```
 实验结果如下表所示。
 
