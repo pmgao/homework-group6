@@ -2,9 +2,9 @@
 
 ## 生日攻击：
 
-定理：设杂凑函数h的输出值长度为n比特，则经过$2^n$次杂凑运算，找到一对碰撞的![](https://latex.codecogs.com/svg.image?(x,x'))概率大于1/2。
+定理：设杂凑函数h的输出值长度为n比特，则经过约[![](https://latex.codecogs.com/svg.image?(x,x'))](https://latex.codecogs.com/svg.image?2^{\frac{n}{2}})次杂凑运算，找到一对碰撞的![](https://latex.codecogs.com/svg.image?(x,x'))概率大于1/2。
 
-过程：不断遍历穷举不同元素的哈希值，当穷举到约$2^n$个元素时，即可找到一组碰撞。
+过程：不断遍历穷举不同元素的哈希值，当穷举到约![](https://latex.codecogs.com/svg.image?2^{\frac{n}{2}})个元素时，即可找到一组碰撞。
 
 ## 实验结果：
 
