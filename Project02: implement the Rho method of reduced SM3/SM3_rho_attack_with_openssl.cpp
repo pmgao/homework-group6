@@ -39,7 +39,6 @@ int main()
 	auto t1 = steady_clock::now();
 	auto t2 = steady_clock::now();
 	while (1) {
-
 		q = F(q);
 		itoa(q, (char*)input1, 10);
 		len1 = sizeof(input1);
