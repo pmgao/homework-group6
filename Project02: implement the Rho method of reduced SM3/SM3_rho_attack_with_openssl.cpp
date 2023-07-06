@@ -36,7 +36,6 @@ int main()
 
 	int32_t q = 11;
 	int32_t i = 13;
-	clock_t start, end;
 	auto t1 = steady_clock::now();
 	auto t2 = steady_clock::now();
 	while (1) {
