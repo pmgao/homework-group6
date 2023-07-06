@@ -1,9 +1,16 @@
 #include"openssl/evp.h"
 #include"openssl/rsa.h"
+#include<string>
+#include<iostream>
+#include<chrono>
+using namespace std::chrono;
+using std::cout;
+using std::endl;
+using std::string;
 #define MAX 32768
 #define F(x) ((x*x+128)%MAX)
 
-int32_t sm3_openssl(const void* message, size_t len, uint8_t* hash)
+void sm3_openssl(const void* message, size_t len, uint8_t* hash)
 {
 	EVP_MD_CTX* md_ctx;
 	const EVP_MD* md;
@@ -14,68 +21,42 @@ int32_t sm3_openssl(const void* message, size_t len, uint8_t* hash)
 	EVP_DigestUpdate(md_ctx, message, len);
 	EVP_DigestFinal_ex(md_ctx, hash, NULL);
 	EVP_MD_CTX_free(md_ctx);
-	return 0;
-}
-
-int32_t inttohex(int32_t aa, uint8_t* buffer)
-{
-	static int32_t  i = 0;
-	i = 0;
-	if (aa < 16)
-	{
-		if (aa < 10)
-			buffer[i] = aa + '0';
-		else
-			buffer[i] = aa - 10 + 'a';
-		buffer[i + 1] = '\0';
-	}
-	else
-	{
-		inttohex(aa / 16, buffer);
-		i++;
-		aa %= 16;
-		if (aa < 10)
-			buffer[i] = aa + '0';
-		else
-			buffer[i] = aa - 10 + 'a';
-	}
-
-	return i + 1;
 }
 
 
 int main()
 {
-	uint8_t tinput[256] = "";
-	int32_t tlen;
-	uint8_t tagart[32];
+	uint8_t input1[256] = "";
+	int32_t len1;
+	uint8_t output1[32];
 
-	uint8_t input[256] = "";
-	int32_t ilen = 0;
-	uint8_t output[32];
+	uint8_t input2[256] = "";
+	int32_t len2 = 0;
+	uint8_t output2[32];
 
 	int32_t q = 11;
-	int32_t i = 51;
+	int32_t i = 13;
 	clock_t start, end;
-	start = clock();
+	auto t1 = steady_clock::now();
+	auto t2 = steady_clock::now();
 	while (1) {
 
 		q = F(q);
-		ilen = inttohex(q, input);
+		itoa(q, (char*)input1, 10);
+		len1 = sizeof(input1);
 		i = F(F(i));
-		tlen = inttohex(i, tinput);
-		sm3_openssl(tinput, tlen, tagart);
-		sm3_openssl(input, ilen, output);
+		itoa(i, (char*)input2, 10);
+		len2 = sizeof(input2);
+		sm3_openssl(input1, len1, output1);
+		sm3_openssl(input2, len2, output2);
 
-		if (output[0] == tagart[0] && output[1] == tagart[1] && output[2] == tagart[2] && output[3] == tagart[3])
+		if (output1[0] == output2[0] && output1[1] == output2[1] && output1[2] == output2[2] && output1[3] == output2[3])
 		{
-			end = clock();
-			printf("solved\n");
-			printf("time=%us\n", clock() / CLOCKS_PER_SEC);
-
+			t2 = steady_clock::now();
+			cout << "find collision!\n";
+			cout << "time = " << duration_cast<microseconds>(t2 - t1).count() << " us\n";
 			break;
 		}
-
 	}
 	return 0;
 }
