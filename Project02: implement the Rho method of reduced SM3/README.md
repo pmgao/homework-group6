@@ -5,7 +5,7 @@
 
 > <img src=".\md_image\20230330-sm3-public.jpg" alt="image-20230703174051013" style="zoom: 67%;" />
 
-该算法的原理可以认为是生日攻击算法的一个扩展，主要是构造出一个终归周期序列，设定两个初始值x,y，经过一个固定的函数F(x)来更新这两个初始值，尝试找到一组碰撞满足![](https://latex.codecogs.com/svg.image?&space;H(x_i)=H(H(x_i)))。
+该算法的原理可以认为是生日攻击算法的一个扩展，主要是构造出一个终归周期序列，设定两个初始值x,y，经过一个固定的函数F(x)来更新这两个初始值，尝试找到一组碰撞满足![](https://latex.codecogs.com/svg.image?&space;H(x_i)=H(H(y_i)))。
 
 
 
