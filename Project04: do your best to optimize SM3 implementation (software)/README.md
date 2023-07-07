@@ -14,11 +14,11 @@
 
 选取的数据示例采用国家密码局标准文档所给出的示例。输入消息为字符串“abc”。
 
-![image-20230707113842742](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230707113842742.png)
+![image-20230707113842742](.\md_image\1.png)
 
-![image-20230707113924953](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230707113924953.png)
+![image-20230707113924953](.\md_image\2.png)
 
-![image-20230707113946829](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230707113946829.png)
+![image-20230707113946829](.\md_image\3.png)
 
 经过比对可以看出，此时的代码实现是正确的。
 
@@ -68,7 +68,7 @@ UNROLL_LOOP_16_1(LOAD_AND_STORE);
 
 首先验证结果的正确性，输入的字符串仍为"abc"，输出结果如下图所示：
 
-![image-20230707121303052](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230707121303052.png)
+![image-20230707121303052](.\md_image\4.png)
 
 结果与先前的一致，证明了我们结果的正确性。
 
