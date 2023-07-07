@@ -35,7 +35,7 @@ int main()
 	auto t2 = steady_clock::now();
 	while (1) {
 		itoa(i, (char*)input, 10);
-		ilen = sizeof(input);
+		ilen = strlen((char*)input);
 		sm3_openssl(input, ilen, output);
 		if (output[0] == tagart[0] && output[1] == tagart[1] && output[2] == tagart[2])
 		{
