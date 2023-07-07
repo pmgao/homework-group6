@@ -142,8 +142,7 @@ static void sm3_compress(uint32_t digest[sm3_block_BYTES / sizeof(uint32_t)], co
 }
 
 
-void sm3(const uint8_t* message, size_t mlen, uint8_t res[sm3_block_BYTES])
-{
+void sm3(const uint8_t* message, size_t mlen, uint8_t res[sm3_block_BYTES]){
 	sm3_ctx ctx;
 	sm3_init(&ctx);
 	sm3_update(&ctx, message, mlen);
@@ -151,15 +150,10 @@ void sm3(const uint8_t* message, size_t mlen, uint8_t res[sm3_block_BYTES])
 }
 
 int main() {
-	size_t len = 0;
 	uint8_t hash[32] = {};
 	uint8_t message[MAX_LEN] = "202100460055\0";
+	size_t len = strlen((char*)message);
 
-	for (int i = 0; i < MAX_LEN; i++) {
-		if (message[i] == '\0')break;
-		len++;
-	}
-	
 	sm3(message, len, hash);
 	for (int i = 0; i < 32; i++)
 		printf("%02x", hash[i]);
