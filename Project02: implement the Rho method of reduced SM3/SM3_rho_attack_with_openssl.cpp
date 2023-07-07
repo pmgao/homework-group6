@@ -41,10 +41,10 @@ int main()
 	while (1) {
 		q = F(q);
 		itoa(q, (char*)input1, 10);
-		len1 = sizeof(input1);
+		len1 = strlen((char*)input1);
 		i = F(F(i));
 		itoa(i, (char*)input2, 10);
-		len2 = sizeof(input2);
+		len2 = strlen((char*)input2);
 		sm3_openssl(input1, len1, output1);
 		sm3_openssl(input2, len2, output2);
 
