@@ -1,9 +1,10 @@
 #include<stdio.h>
 #include<bitset>
+#include<string.h>
 #include<intrin.h>
 
 #define MAX_LEN 2<<12
-#define rol(x,j) ((x<<j)|(unsigned int(x)>>(32-j)))
+#define rol(x,j) ((x<<j)|(uint32_t(x)>>(32-j)))
 #define P0(x) ((x) ^ rol((x), 9) ^ rol((x), 17))
 #define P1(x) ((x) ^ rol((x), 15) ^ rol((x), 23))
 #define FF0(x, y, z) ((x) ^ (y) ^ (z))
@@ -161,21 +162,13 @@ do { \
 uint32_t IV[8] = { 0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600, 0xa96f30bc, 0x163138aa, 0xe38dee4d ,0xb0fb0e4e };
 char plaintext_after_stuffing[MAX_LEN] = { '\0' };
 
-static void dump_buf(char* hash, size_t lenth)
-{
-    for (size_t i = 0; i < lenth; i++) {
-        printf("%02x", (uint8_t)hash[i]);
-    }
-}
-
 
 uint32_t bit_stuffing(uint8_t* plaintext, size_t len) {
-    uint64_t bit_len = len * uint64_t(8);
+    uint64_t bit_len = len * 8;
     uint64_t the_num_of_fin_group = (bit_len >> 3);
     uint32_t the_mod_of_fin_froup = bit_len & 511;
-    uint32_t lenth_for_p_after_stuffing;
     size_t i, j, k = the_mod_of_fin_froup < 448 ? 1 : 2;
-    lenth_for_p_after_stuffing = (((len >> 6) + k) << 6);
+    uint32_t lenth_for_p_after_stuffing = (((len >> 6) + k) << 6);
 
     __m128i* src = (__m128i*)plaintext;
     __m128i* dst = (__m128i*)plaintext_after_stuffing;
@@ -212,13 +205,12 @@ void CF_for_simd(uint32_t* V, int* BB) {
     uint32_t temp, SS1, SS2, TT1, TT2;
 
     UNROLL_LOOP_16_0(BYTE_SWAP_W);
-    UNROLL_LOOP_4_16(UPDATE_W)
-        UNROLL_LOOP_16_64_1(LOAD_AND_XOR);
+    UNROLL_LOOP_4_16(UPDATE_W);
+    UNROLL_LOOP_16_64_1(LOAD_AND_XOR);
     int A = V[0], B = V[1], C = V[2], D = V[3], E = V[4], F = V[5], G = V[6], H = V[7];
     UNROLL_LOOP_16_0(LOOP_BODY1);
     UNROLL_LOOP_16_64_0(LOOP_BODY2);
     V[0] = A ^ V[0], V[1] = B ^ V[1], V[2] = C ^ V[2], V[3] = D ^ V[3], V[4] = E ^ V[4], V[5] = F ^ V[5], V[6] = G ^ V[6], V[7] = H ^ V[7];
-
 }
 
 
@@ -233,14 +225,17 @@ void sm3_simd(uint8_t* plaintext, uint32_t* hash_val, size_t len) {
     }
 }
 
+static void dump_buf(char* hash, size_t lenth) {
+    for (size_t i = 0; i < lenth; i++) {
+        printf("%02x", (uint8_t)hash[i]);
+    }
+}
+
 int main() {
     uint8_t plaintext[MAX_LEN] = "202100460055\0";
+    size_t len = strlen((char*)plaintext);
     uint32_t hash_val[8];
-    size_t len = 0;
-    for (size_t i = 0; i < MAX_LEN; i++) {
-        if (plaintext[i] == '\0')break;
-        len++;
-    }
+
     sm3_simd(plaintext, hash_val, len);
     dump_buf((char*)hash_val, 32);
 
