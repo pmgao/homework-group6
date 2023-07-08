@@ -24,30 +24,23 @@ void generate_data() {
 
 int main() {
 	generate_data();
+
 	clock_t t;
 	vector<char*> v(MAX_SIZE - TEST_INSERT);
-
 	for (int i = 0; i < MAX_SIZE - TEST_INSERT; i++) {
 		v[i] = (char*)table[i];
 	}
 
-
 	t = clock();
 	merkletree mtree = merkletree(v, length);
-
 	printf("maked merkle\n");
-
-
 	for (int i = MAX_SIZE - TEST_INSERT; i < MAX_SIZE; i++) {
 		v.push_back((char*)table[i]);
 		mtree.pushleaf(v[i]);
 	}
-
 	t = clock() - t;
 	printf("root: %s\n", mtree.root());
 	printf("[build mtree] took %d clocks (%f secs)\n", t, (float)t / CLOCKS_PER_SEC);
-
-
 
 	{
 		//Inclusion Proof
@@ -59,7 +52,7 @@ int main() {
 	{
 		//Exclusion Proof
 		char* test;
-		test = new char[length] {0x01};
+		test = new char[length] {};
 		vector<ProofNode> proof = mtree.proof(test);
 		bool verproof = verifyProof(test, mtree.root(), proof);
 		printf("[verify proof][ => %d ]\n", verproof);
