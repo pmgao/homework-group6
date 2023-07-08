@@ -8,6 +8,7 @@
 #define TEST_INSERT 1
 #define MAX_SIZE 100000
 #define length uint64_t(log(double(MAX_SIZE)) / log(double(16))) + 1
+
 static uint8_t* table[MAX_SIZE];
 
 
@@ -44,19 +45,17 @@ int main() {
 
 	{
 		//Inclusion Proof
-		vector<ProofNode> proof = mtree.proof((char*)table[0]);
-		bool verproof = verifyProof((char*)table[0], mtree.root(), proof);
+		vector<ProofNode> proof = mtree.proof(v[127]);
+		bool verproof = verifyProof(v[127], mtree.root(), proof);
 		printf("[verify proof][ => %d ]\n", verproof);
 	}
 
 	{
 		//Exclusion Proof
-		char* test;
-		test = new char[length] {};
-		vector<ProofNode> proof = mtree.proof(test);
-		bool verproof = verifyProof(test, mtree.root(), proof);
+		char temp = 0x01;
+		vector<ProofNode> proof = mtree.proof(&temp);
+		bool verproof = verifyProof(&temp, mtree.root(), proof);
 		printf("[verify proof][ => %d ]\n", verproof);
-		delete[] test;
 	}
 
 	return 0;
