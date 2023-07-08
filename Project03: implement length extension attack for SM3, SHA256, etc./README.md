@@ -4,7 +4,7 @@
 
 长度扩展攻击是基于MD结构构建的，可由一个已知的哈希值而不需要知道其原像内容，便构造出另外一个哈希值。
 
-![image-20230708151557732](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230708151557732.png)
+![image-20230708151557732](.\md_image\1.png)
 
 具体流程如下：
 
@@ -22,6 +22,6 @@
 
 运行结果如下图所示：
 
-![image-20230708152928190](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230708152928190.png)
+![image-20230708152928190](.\md_image\2.png)
 
 可以看出，经过长度扩展攻击所构造出来哈希值，与填充之后的原消息级联之后所构造出来的哈希值相同。
