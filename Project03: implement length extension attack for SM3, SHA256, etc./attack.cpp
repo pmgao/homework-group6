@@ -1,4 +1,4 @@
-#include "./SM4.h"
+#include "./SM3.h"
 
 void sm3_simd(char plaintext[], int* hash_val, int lenth_for_plaintext) {
     int n = bit_stuffing(plaintext, lenth_for_plaintext) / 64;
