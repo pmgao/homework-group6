@@ -28,7 +28,7 @@ static void combin(char* leftData, char* rightData, char out_buff[65]) {
 	out_buff[64] = 0;
 }
 
-bool verifyProof(char* leaf, char* expectedMerkleRoot, vector<ProofNode> proofArr) {
+bool verifyProof(char* leaf, char* expectedMerkleRoot, vector<ProofNode>& proofArr) {
 	if (proofArr.size() == 0) {
 		if (strcmp(leaf, expectedMerkleRoot) == 0)
 			return true;
