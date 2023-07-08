@@ -12,7 +12,7 @@ void sm3_simd(char plaintext[], int* hash_val, int lenth_for_plaintext) {
 }
 
 
-void sm3_for_length_attack(char plaintext[], int* hash_val, int lenth_for_plaintext, int length_for_message) {
+void sm3_simd_for_length_attack(char plaintext[], int* hash_val, int lenth_for_plaintext, int length_for_message) {
     int n = bit_stuff_for_length_attack(plaintext, lenth_for_plaintext, length_for_message) / 64;
     for (int i = 0; i < n; i++) {
         CF_for_simd((uint32_t*)IV, (int*)&plaintext_after_stuffing[i * 64]);
@@ -26,7 +26,7 @@ void sm3_for_length_attack(char plaintext[], int* hash_val, int lenth_for_plaint
 int sm3_length_attack(char* memappend, int* hash_val, int length_formemappend, int length_for_message) {
     int new_hash_val[8];
     memcpy(IV, hash_val, 32);
-    sm3_for_length_attack(memappend, new_hash_val, length_formemappend, length_for_message);
+    sm3_simd_for_length_attack(memappend, new_hash_val, length_formemappend, length_for_message);
     dump_buf((char*)new_hash_val, 32);
     return 0;
 }
