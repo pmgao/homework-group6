@@ -1,19 +1,10 @@
-#include<iostream>
+#include<stdio.h>
 #include<bitset>
-#include<sstream>
-#include<fstream>
+#include<string.h>
 #include<intrin.h>
-using namespace std;
 
-int IV[8] = { 0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600, 0xa96f30bc, 0x163138aa, 0xe38dee4d ,0xb0fb0e4e };
-int IV2[8] = { 0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600, 0xa96f30bc, 0x163138aa, 0xe38dee4d ,0xb0fb0e4e };
-int T[2] = { 0x79cc4519 ,0x7a879d8a };
-char* plaintext_after_stuffing;
-int length;
-
-#define NUM  4294967296;
 #define MAX_LEN 2<<12
-#define rol(x,j) ((x<<j)|(unsigned int(x)>>(32-j)))
+#define rol(x,j) ((x<<j)|(uint32_t(x)>>(32-j)))
 #define P0(x) ((x) ^ rol((x), 9) ^ rol((x), 17))
 #define P1(x) ((x) ^ rol((x), 15) ^ rol((x), 23))
 #define FF0(x, y, z) ((x) ^ (y) ^ (z))
@@ -128,6 +119,10 @@ int length;
 
 #define BYTE_SWAP_W(i) W[i] = byte_swap32(BB[i]);
 
+#define LOAD_AND_STORE(i) \
+    __m128i temp##i = _mm_loadu_si128(src + i); \
+    _mm_storeu_si128(dst + i, temp##i);
+
 #define LOAD_AND_XOR(index) \
     __m128i w1_##index = _mm_loadu_si128((__m128i*)(W + index)); \
     __m128i w2_##index = _mm_loadu_si128((__m128i*)(W + index + 4)); \
@@ -164,47 +159,44 @@ do { \
     memcpy(&W[(j << 2)], (int*)&re, 16); \
 } while (0)
 
-//输出结果
-static void dump_buf(char* ciphertext_32, int lenth) {
-    for (int i = 0; i < lenth; i++) {
-        printf("%02X ", (unsigned char)ciphertext_32[i]);
-    }
-    printf("\n");
-}
+uint32_t IV[8] = { 0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600, 0xa96f30bc, 0x163138aa, 0xe38dee4d ,0xb0fb0e4e };
+char plaintext_after_stuffing[MAX_LEN] = { '\0' };
 
-int bit_stuffing(char plaintext[], int length_for_plaintext) {
-    long long bit_len = uint64_t(length_for_plaintext) * 8;
-    int lenth_for_p_after_stuffing = (length_for_plaintext / 64 + 1) * 64;
-    plaintext_after_stuffing = new char[lenth_for_p_after_stuffing];
-    memcpy(plaintext_after_stuffing, plaintext, length_for_plaintext);
-    plaintext_after_stuffing[length_for_plaintext] = 0x80;
-    for (int i = length_for_plaintext + 1; i < lenth_for_p_after_stuffing - 8; i++) {
+
+uint32_t bit_stuffing(uint8_t* plaintext, size_t len) {
+    uint64_t bit_len = len * 8;
+    uint64_t the_num_of_fin_group = (bit_len >> 3);
+    uint32_t the_mod_of_fin_froup = bit_len & 511;
+    size_t i, j, k = the_mod_of_fin_froup < 448 ? 1 : 2;
+    uint32_t lenth_for_p_after_stuffing = (((len >> 6) + k) << 6);
+
+    __m128i* src = (__m128i*)plaintext;
+    __m128i* dst = (__m128i*)plaintext_after_stuffing;
+    for (i = 0; i < len; i += 16, src += 4, dst += 4) {
+        UNROLL_LOOP_16_1(LOAD_AND_STORE);
+    }
+    plaintext_after_stuffing[len] = static_cast <char>(0x80);
+    for (i = len + 1; i + 8 <= lenth_for_p_after_stuffing; i += 8) {
         plaintext_after_stuffing[i] = 0;
+        plaintext_after_stuffing[i + 1] = 0;
+        plaintext_after_stuffing[i + 2] = 0;
+        plaintext_after_stuffing[i + 3] = 0;
+        plaintext_after_stuffing[i + 4] = 0;
+        plaintext_after_stuffing[i + 5] = 0;
+        plaintext_after_stuffing[i + 6] = 0;
+        plaintext_after_stuffing[i + 7] = 0;
     }
-
-    for (int i = lenth_for_p_after_stuffing - 8, j = 0; i < lenth_for_p_after_stuffing; i++, j++) {
-        plaintext_after_stuffing[i] = ((char*)&bit_len)[7 - j];
-    }
-
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 8] = ((char*)&bit_len)[7];
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 7] = ((char*)&bit_len)[6];
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 6] = ((char*)&bit_len)[5];
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 5] = ((char*)&bit_len)[4];
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 4] = ((char*)&bit_len)[3];
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 3] = ((char*)&bit_len)[2];
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 2] = ((char*)&bit_len)[1];
+    plaintext_after_stuffing[lenth_for_p_after_stuffing - 1] = ((char*)&bit_len)[0];
     return lenth_for_p_after_stuffing;
 }
 
-int bit_stuff_for_length_attack(char plaintext[], int length_for_plaintext, int length_for_message) {
-    long long bit_len = uint64_t(length_for_plaintext + length_for_message) * 8;
-    int lenth_for_p_after_stuffing = (length_for_plaintext / 64 + 1) * 64;
-    plaintext_after_stuffing = new char[lenth_for_p_after_stuffing];
-    memcpy(plaintext_after_stuffing, plaintext, length_for_plaintext);
-    plaintext_after_stuffing[length_for_plaintext] = 0x80;
-    for (int i = length_for_plaintext + 1; i < lenth_for_p_after_stuffing - 8; i++) {
-        plaintext_after_stuffing[i] = 0;
-    }
-
-    for (int i = lenth_for_p_after_stuffing - 8, j = 0; i < lenth_for_p_after_stuffing; i++, j++) {
-        plaintext_after_stuffing[i] = ((char*)&bit_len)[7 - j];
-    }
-
-    return lenth_for_p_after_stuffing;
-}
 
 void CF_for_simd(uint32_t* V, int* BB) {
     uint32_t W[68];
@@ -219,58 +211,33 @@ void CF_for_simd(uint32_t* V, int* BB) {
     UNROLL_LOOP_16_0(LOOP_BODY1);
     UNROLL_LOOP_16_64_0(LOOP_BODY2);
     V[0] = A ^ V[0], V[1] = B ^ V[1], V[2] = C ^ V[2], V[3] = D ^ V[3], V[4] = E ^ V[4], V[5] = F ^ V[5], V[6] = G ^ V[6], V[7] = H ^ V[7];
-
 }
 
-void sm3_simd(char plaintext[], int* hash_val, int lenth_for_plaintext) {
-    int n = bit_stuffing(plaintext, lenth_for_plaintext) / 64;
-    for (int i = 0; i < n; i++) {
-        CF_for_simd((uint32_t*)IV, (int*)&plaintext_after_stuffing[i * 64]);
+
+void sm3_simd(uint8_t* plaintext, uint32_t* hash_val, size_t len) {
+    size_t i;
+    uint32_t n = bit_stuffing(plaintext, len) / 64;
+    for (i = 0; i < n; i++) {
+        CF_for_simd(IV, (int*)&plaintext_after_stuffing[i * 64]);
     }
-    for (int i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++) {
         hash_val[i] = byte_swap32(IV[i]);
     }
-    memcpy(IV, IV2, 32);
 }
 
-
-void sm3_for_length_attack(char plaintext[], int* hash_val, int lenth_for_plaintext, int length_for_message) {
-    int n = bit_stuff_for_length_attack(plaintext, lenth_for_plaintext, length_for_message) / 64;
-    for (int i = 0; i < n; i++) {
-        CF_for_simd((uint32_t*)IV, (int*)&plaintext_after_stuffing[i * 64]);
+static void dump_buf(char* hash, size_t lenth) {
+    for (size_t i = 0; i < lenth; i++) {
+        printf("%02x", (uint8_t)hash[i]);
     }
-    for (int i = 0; i < 8; i++) {
-        hash_val[i] = byte_swap32(IV[i]);
-    }
-    memcpy(IV, IV2, 32);
-}
-
-int sm3_length_attack(char* memappend, int* hash_val, int length_formemappend, int length_for_message) {
-    int new_hash_val[8];
-    memcpy(IV, hash_val, 32);
-    sm3_for_length_attack(memappend, new_hash_val, length_formemappend, length_for_message);
-    dump_buf((char*)new_hash_val, 32);
-    return 0;
 }
 
 int main() {
-    char plaintext[] = "Hello world!";
-    int hash_val[8];
-    int hash_val2[8];
-    sm3_simd(plaintext, hash_val, sizeof(plaintext));
-    dump_buf((char*)hash_val, 32);
-    for (int i = 0; i < 8; i++) {
-        hash_val2[i] = byte_swap32(hash_val[i]);
-    }
-    bit_stuffing(plaintext, sizeof(plaintext));
-    char plaintext_for_length_attack[64 + sizeof(plaintext)];
-    memcpy(plaintext_for_length_attack, plaintext_after_stuffing, 64);
-    char memappend[] = "202100460055";
-    memcpy(&plaintext_for_length_attack[64], memappend, sizeof(memappend));
-    sm3_simd(plaintext_for_length_attack, hash_val, 64 + sizeof(memappend));
-    dump_buf((char*)hash_val, 32);
-    sm3_length_attack(memappend, hash_val2, sizeof(memappend), 64);
+    uint8_t plaintext[MAX_LEN] = "202100460055\0";
+    size_t len = strlen((char*)plaintext);
+    uint32_t hash_val[8];
 
+    sm3_simd(plaintext, hash_val, len);
+    dump_buf((char*)hash_val, 32);
 
     return 0;
 }
