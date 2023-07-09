@@ -8,7 +8,7 @@ Merkle Tree是存储hash值的一棵树，在该树的最底层可以看作一�
 
 
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230708235635449.png" alt="image-20230708235635449" style="zoom: 80%;" />
+<img src=".\md_image\1.png" alt="image-20230708235635449" style="zoom: 80%;" />
 
 ## 存在性证明：
 
@@ -63,4 +63,4 @@ void generate_data() {
 
 运行结果如下图所示：
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230709105704975.png" alt="image-20230709105704975"  />
+<img src=".\md_image\2.png" alt="image-20230709105704975"  />
