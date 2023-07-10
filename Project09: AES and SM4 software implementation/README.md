@@ -75,6 +75,7 @@ static void aes128_load_key(uint8_t* enc_key, __m128i* key_schedule) {
 运行结果如下图所示。所采用的数据样本来自于Dworkin M J, Barker E B, Nechvatal J R, et al. Advanced encryption standard (AES)[J]. 2001.，加解密结果经过比对均一致。一组加解密所需时间开销为纳秒级。
 
 <img src=".\md_image\2.png" alt="image-20230710120339611" style="zoom:100%;" />
+
 ## SM4
 
 采用SIMD指令+宏函数+循环展开的方式来对SM4进行优化。
