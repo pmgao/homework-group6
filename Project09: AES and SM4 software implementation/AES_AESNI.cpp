@@ -89,7 +89,7 @@ static void aes128_dec(__m128i* key_schedule, uint8_t* cipherText, uint8_t* plai
 
 void dump_buf(uint8_t data[]) {
     for (size_t i = 0; i < 16; i++) {
-        cout << std::hex << (int)data[i] << " ";
+        printf("%02x ", data[i]);
     }
     cout << endl;
 }
