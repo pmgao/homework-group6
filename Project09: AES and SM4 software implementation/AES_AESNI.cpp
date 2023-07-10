@@ -1,6 +1,8 @@
 #include<immintrin.h>
 #include<stdint.h>
 #include<iostream>
+#include<chrono>
+using namespace std::chrono;
 using std::cout;
 using std::endl;
 
@@ -101,9 +103,18 @@ int main() {
     uint8_t computed_cipher[16];
     uint8_t computed_plain[16];
     __m128i key_schedule[20];
+    steady_clock::time_point start, end;
     aes128_load_key(enc_key, key_schedule);
+
+    start = steady_clock::now();
     aes128_enc(key_schedule, plain, computed_cipher);
+    end = steady_clock::now();
+    printf("%lld ns for encryption\n", duration_cast<nanoseconds>(end - start).count());
+
+    start = steady_clock::now();
     aes128_dec(key_schedule, cipher, computed_plain);
+    end = steady_clock::now();
+    printf("%lld ns for decryption\n", duration_cast<nanoseconds>(end - start).count());
 
     cout << "Cipher text:";
     dump_buf(computed_cipher);
