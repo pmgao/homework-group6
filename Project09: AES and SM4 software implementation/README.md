@@ -74,8 +74,7 @@ static void aes128_load_key(uint8_t* enc_key, __m128i* key_schedule) {
 
 运行结果如下图所示。所采用的数据样本来自于Dworkin M J, Barker E B, Nechvatal J R, et al. Advanced encryption standard (AES)[J]. 2001.，加解密结果经过比对均一致。一组加解密所需时间开销为纳秒级。
 
-![image-20230710104009810](C:\Users\Lenovo\Desktop\2.png)
-
+<img src=".\md_image\1.png" alt="image-20230710120339611" style="zoom:100%;" />
 # SM4
 
 采用SIMD指令+宏函数+循环展开的方式来对SM4进行优化。
@@ -84,7 +83,7 @@ static void aes128_load_key(uint8_t* enc_key, __m128i* key_schedule) {
 
 因AES中的S盒所属数域为![](https://latex.codecogs.com/svg.image?GF(2^8))的一种结构，同样SM4中的S盒所属数域也为![](https://latex.codecogs.com/svg.image?GF(2^8))，二者之间是同构的，所以我们期望采用x86处理器自身所提供的AESNI指令集来减少通用指令所带来的耗时。
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230710120339611.png" alt="image-20230710120339611" style="zoom:50%;" />
+<img src=".\md_image\2.png" alt="image-20230710120339611" style="zoom:50%;" />
 
 具体地，我们可以使用_mm_aesenclast_si128()函数(没有列混合操作)来完成过S盒的操作，这便需要在SM4算法经过S盒之前经过同构映射映射到AES的数域中，并在经过S盒之后经过同构逆映射映回SM4的数域中。
 
@@ -131,10 +130,10 @@ inline static __m128i SM4_SBox_TO_AES(__m128i x) {
 
 所采用数据示例来自于GM/T 0002-2012标准。
 
-![image-20230710121502993](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230710121502993.png)
+<img src=".\md_image\3.png" alt="image-20230710120339611" style="zoom:100%;" />
 
-![image-20230710121531457](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230710121531457.png)
+<img src=".\md_image\4.png" alt="image-20230710120339611" style="zoom:100%;" />
 
-![image-20230710121555573](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230710121555573.png)
+<img src=".\md_image\5.png" alt="image-20230710120339611" style="zoom:100%;" />
 
 可以看出，加解密结果均一致，证明了代码的正确性，加解密时间也接近于纳秒级(19000ns与3000ns)。
