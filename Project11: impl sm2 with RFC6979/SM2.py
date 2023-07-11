@@ -200,19 +200,19 @@ def verify(public_key, ID, message, signature):
 
 
 if __name__ == "__main__":
-    prikey, pubkey = generate_key()
-    print('pk：', pubkey)
+    sk, pk = generate_key()
+    print('pk：', pk)
     message = input("Input your message: ")
     ID = input("Input your ID: ")
 
-    Z_A = precompute(ID, A, B, G_X, G_Y, pubkey[0], pubkey[1])
-    signature = sign(prikey, message, str(Z_A))
+    Z_A = precompute(ID, A, B, G_X, G_Y, pk[0], pk[1])
+    signature = sign(sk, message, str(Z_A))
     while signature is None:
-        prikey, pubkey = generate_key()
-        print('new pk：', pubkey)
-        Z_A = precompute(ID, A, B, G_X, G_Y, pubkey[0], pubkey[1])
-        signature = sign(prikey, message, str(Z_A))
+        sk, pk = generate_key()
+        print('new pk：', pk)
+        Z_A = precompute(ID, A, B, G_X, G_Y , pk[0], pk[1])
+        signature = sign(sk, message, str(Z_A))
 
     print("sign: ", signature)
-    if verify(pubkey, ID, message, signature) == 1:
+    if verify(pk, ID, message, signature) == 1:
         print('verified!')
