@@ -4,15 +4,15 @@
 
 以SM2签名版本为例，SM2签名是基于椭圆曲线上的离散对数困难问题而构造的，主要分为预计算、密钥生成、签名与验签四大阶段。
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230711142140584.png" alt="image-20230711142140584" style="zoom:80%;" />
+<img src=".\md_image\1.png" alt="image-20230711142140584" style="zoom:80%;" />
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230711142149277.png" alt="image-20230711142149277" style="zoom:80%;" />
+<img src=".\md_image\2.png" alt="image-20230711142149277" style="zoom:80%;" />
 
 ## RFC6979标准
 
 当SM2算法重复使用随机数k时，会导致私钥的泄露。
 
-![image-20230711142957738](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230711142957738.png)
+<img src=".\md_image\3.png" alt="image-20230711142149277" style="zoom:100%;" />
 
 因此，为了克服这种安全性上的缺陷，RFC6962标准建议了随机数k的选取方法![](https://latex.codecogs.com/svg.image?k=SHA256(sk&plus;H(m)))，其中的函数H我们选取为SM3杂凑算法，这样，当每次加密不同消息时，产生的随机数k就会以很大的概率不同。
 
@@ -38,4 +38,4 @@ G = (G_X, G_Y)
 
 输入为用户所要验证的消息内容及用户相应的ID，输出为签名值及验证结果。
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230711143742913.png" alt="image-20230711143742913" style="zoom:80%;" />
+<img src=".\md_image\4.png" alt="image-20230711143742913" style="zoom:80%;" />
