@@ -37,24 +37,24 @@
 
 ## 泄露随机数k
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712101401658.png" alt="image-20230712101401658" style="zoom:80%;" />
+<img src=".\md_image\1.png" alt="image-20230712101401658" style="zoom:80%;" />
 
-![image-20230712101743927](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712101743927.png)
+<img src=".\md_image\2.png" alt="image-20230712101401658" style="zoom:80%;" />
 
 ## 重复使用随机数k
 
-![image-20230712102827060](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712102827060.png)
+<img src=".\md_image\3.png" alt="image-20230712101401658" style="zoom:80%;" />
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712103043264.png" alt="image-20230712103043264" style="zoom:80%;" />
+<img src=".\md_image\4.png" alt="image-20230712101401658" style="zoom:80%;" />
 
 ## 不同的用户重复使用随机数k
 
-![image-20230712103249427](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712103249427.png)
+<img src=".\md_image\5.png" alt="image-20230712101401658" style="zoom:80%;" />
 
-![image-20230712103517245](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712103517245.png)
+<img src=".\md_image\6.png" alt="image-20230712101401658" style="zoom:80%;" />
 
 ## SM2签名与ECDSA签名时使用了相同的私钥与随机数k
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712103622485.png" alt="image-20230712103622485" style="zoom:80%;" />
+<img src=".\md_image\7.png" alt="image-20230712101401658" style="zoom:80%;" />
 
-![image-20230712103826087](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230712103826087.png)
+<img src=".\md_image\8.png" alt="image-20230712101401658" style="zoom:80%;" />
