@@ -33,7 +33,7 @@
         BN_hex2bn(&sig2[0], "91282674d71ee9a0395108230967805e5e65856f1d287b33e76717aa312d92a4"); 
 	BN_hex2bn(&sig2[1], "ba1aca04ed6a8ea5b0c7112bb2b75f41af2ae08a3ade342e96ef020c2ad0494d");
 	BN_hex2bn(&N, "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
-//random k
+//message HASH for ECDSA
 	BN_hex2bn(&e1, "c2f2d91c2a31954e293fe038488e1a411a2fd90c0196c126c918852e3e80a7d9");
 ```
 
