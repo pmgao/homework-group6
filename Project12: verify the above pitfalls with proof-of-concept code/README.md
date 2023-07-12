@@ -16,7 +16,7 @@
 
 ```c++
 //SM2
-    BN_hex2bn(&k, "c1b286ef1bbe49174b9a4c3439e738e5b025eefe135a246d50f7652726f6ecd0");
+        BN_hex2bn(&k, "c1b286ef1bbe49174b9a4c3439e738e5b025eefe135a246d50f7652726f6ecd0");
 	BN_hex2bn(&PK1[0], "2b4a8cabec11ba85b0cbe50ddd5a36f9449a79fdee442e11333a49ef32c9e5cb");
 	BN_hex2bn(&PK1[1], "668c94526e0b8a25f2bc0ad63ef119b2091a02496a75001da1dc2420c08830f9");
 	BN_hex2bn(&SK1, "83bb90c52a7aabc2cfc4eaf90bd32e19894454d1f0e8e526a936f47cfd2a1e91");
@@ -30,9 +30,11 @@
 	BN_hex2bn(&sig2[1], "28152fa35e1b67c4bf88462c10bc06f394cb255d87f2a7e8028113b8638ead2b");
 	BN_hex2bn(&N, "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
 //ECDSA
-    BN_hex2bn(&sig2[0], "91282674d71ee9a0395108230967805e5e65856f1d287b33e76717aa312d92a4"); 
+        BN_hex2bn(&sig2[0], "91282674d71ee9a0395108230967805e5e65856f1d287b33e76717aa312d92a4"); 
 	BN_hex2bn(&sig2[1], "ba1aca04ed6a8ea5b0c7112bb2b75f41af2ae08a3ade342e96ef020c2ad0494d");
 	BN_hex2bn(&N, "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
+//random k
+	BN_hex2bn(&e1, "c2f2d91c2a31954e293fe038488e1a411a2fd90c0196c126c918852e3e80a7d9");
 ```
 
 ## 泄露随机数k
