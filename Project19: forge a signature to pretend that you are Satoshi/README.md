@@ -14,7 +14,13 @@
 EC_GROUP* curve = EC_GROUP_new_by_curve_name(NID_secp256k1);
 ```
 
-采用的公私钥数据仍然沿用Project 12的数据，按照上图所述流程，分别生成随机数u与v。
+采用的公钥数据使用中本聪本人在比特币网络上所发布的第一笔交易，按照上图所述流程，分别生成随机数u与v。
+
+```c++
+    BN_hex2bn(&x, "678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb6");
+    BN_hex2bn(&y, "49f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f");
+    PK = create_ec_point(x, y);
+```
 
 ```c++
     BN_rand(u, BN_num_bits(N), 0, 0);
