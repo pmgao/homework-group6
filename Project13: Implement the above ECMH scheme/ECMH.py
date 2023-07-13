@@ -119,5 +119,5 @@ if __name__ == "__main__":
     print('HASH(m2)\t\t\t', single(m2))
     print('HASH([m1, m2])\t\t', combine([m1, m2]))
     print('HASH([m2, m1])\t\t', combine([m2, m1]))
-    print('HASH(single(m1) + m2))', ADD(single(m1), m2))
-    print('HASH(combine([m1, m2]) + m2)', remove(combine([m1, m2]), m2))
+    print('HASH(m1) + HASH(m2))', ADD(single(m1), m2))
+    print('HASH([m1, m2]) + HASH(m2)', remove(combine([m1, m2]), m2))
