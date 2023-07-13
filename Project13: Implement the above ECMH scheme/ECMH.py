@@ -1,4 +1,4 @@
-from hashlib import sha256
+from gmssl import sm3, func
 from random import randint
 from math import sqrt
 
@@ -71,12 +71,12 @@ def msg_to_dot(msg):
         return pow(y, (p - 1) // 2, p)
 
     def msg_to_x(m):
-        mdigest = sha256(bytes(bytearray(m, encoding='utf-8'))).hexdigest()
+        mdigest = sm3.sm3_hash(func.bytes_to_list(bytes(m, encoding='utf-8')))
         while 1:  # cycle until x belong to QR
             x = int(mdigest, 16)
             if Legendre(x, P):
                 break
-            mdigest = sha256(bytes(bytearray(m, encoding='utf-8'))).hexdigest()
+            mdigest = sm3.sm3_hash(func.bytes_to_list(bytes(m, encoding='utf-8')))
         return x
 
     def get_y(x):
