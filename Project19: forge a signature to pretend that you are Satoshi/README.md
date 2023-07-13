@@ -17,7 +17,7 @@ EC_GROUP* curve = EC_GROUP_new_by_curve_name(NID_secp256k1);
 采用的公私钥数据仍然沿用Project 12的数据，按照上图所述流程，分别生成随机数u与v。
 
 ```c++
-BN_rand(u, BN_num_bits(N), 0, 0);
+    BN_rand(u, BN_num_bits(N), 0, 0);
     while (1) {
         BN_gcd(gcd, u, N, BN_CTX_new());
         if (BN_is_one(gcd)) {
@@ -38,7 +38,7 @@ BN_rand(u, BN_num_bits(N), 0, 0);
 之后计算得到R‘与r’。
 
 ```c++
- EC_POINT* R_ = EC_POINT_new(curve);
+    EC_POINT* R_ = EC_POINT_new(curve);
     EC_POINT_mul(curve, R_, u, PK, v, BN_CTX_new());
 
     BIGNUM* r_ = BN_new();
@@ -48,7 +48,7 @@ BN_rand(u, BN_num_bits(N), 0, 0);
 此时，s'与e'便可计算得到，签名便被伪造成功。
 
 ```c++
- BIGNUM* s_ = BN_new();
+    BIGNUM* s_ = BN_new();
     BN_mod_inverse(s_, v, N, BN_CTX_new());
     BN_mod_mul(s_, s_, r_, N, BN_CTX_new());
 
