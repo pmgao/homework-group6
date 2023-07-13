@@ -10,46 +10,6 @@ G_X = 0x421DEBD61B62EAB6746434EBC3CC315E32220B3BADD50BDC4C4E6C147FEDD43D
 G_Y = 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2
 G = (G_X, G_Y)
 
-
-def Legendre(y, p):
-    return pow(y, (p - 1) // 2, p)
-
-
-def Tonelli_Shanks(y, p):
-    assert Legendre(y, p) == 1
-    if p % 4 == 3:
-        return pow(y, (p + 1) // 4, p)
-
-    q, s = p - 1, 0
-    while q % 2 == 0:
-        q //= 2
-        s += 1
-
-    z = next(z for z in range(2, p) if Legendre(z, p) == p - 1)
-    c = pow(z, q, p)
-
-    r = pow(y, (q + 1) // 2, p)
-    t = pow(y, q, p)
-    m = s
-
-    if t % p == 1:
-        return r
-
-    i = 0
-    while t % p != 1:
-        temp = pow(t, 2 ** (i + 1), p)
-        i += 1
-        if temp % p == 1:
-            b = pow(c, 2 ** (m - i - 1), p)
-            r = r * b % p
-            c = b * b % p
-            t = t * c % p
-            m = i
-            i = 0
-
-    return r
-
-
 def inv(a, n):
     def ext_gcd(a, b, arr):
         if b == 0:
