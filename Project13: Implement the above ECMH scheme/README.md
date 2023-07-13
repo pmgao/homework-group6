@@ -1,6 +1,6 @@
 # Project13: Implement the above ECMH scheme
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230713183222975.png" alt="image-20230713183222975" style="zoom:80%;" />
+<img src=".\md_image\1.png" alt="image-20230713183222975" style="zoom:80%;" />
 
 ECMH相当于将某些消息的哈希值各自映射到椭圆曲线上的一个点，并使用椭圆曲线上各种运算将这些消息的合并起来，支持消息的插入与删除。
 
@@ -50,4 +50,4 @@ def msg_to_dot(msg):
 
 测试结果时，我们设定了两条消息初始值，并得到了关于这两种消息作各种组合所对应的椭圆曲线上的点。
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230713185628193.png" alt="image-20230713185628193"  />
+<img src=".\md_image\2.png" alt="image-20230713185628193"  />
