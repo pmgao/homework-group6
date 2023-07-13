@@ -12,14 +12,31 @@ const BIGNUM* N;
 const EC_POINT* G;
 EC_GROUP* curve = EC_GROUP_new_by_curve_name(NID_secp256k1);
 EC_POINT* PK = EC_POINT_new(curve);
-BIGNUM* SK = BN_new();
 
+EC_POINT* create_ec_point(const BIGNUM* x, const BIGNUM* y) {
+    EC_POINT* point = EC_POINT_new(curve);
+    if (point == NULL) {
+        printf("Failed to allocate memory for EC_POINT\n");
+        return NULL;
+    }
+
+    if (EC_POINT_set_affine_coordinates_GFp(curve, point, x, y, NULL) != 1) {
+        printf("Failed to set coordinates for EC_POINT\n");
+        EC_POINT_free(point);
+        return NULL;
+    }
+
+    return point;
+}
 
 void init() {
     N = EC_GROUP_get0_order(curve);
     G = EC_GROUP_get0_generator(curve);
-    BN_hex2bn(&SK, "83bb90c52a7aabc2cfc4eaf90bd32e19894454d1f0e8e526a936f47cfd2a1e91");
-    EC_POINT_mul(curve, PK, SK, nullptr, nullptr, BN_CTX_new());
+
+    BIGNUM* x = BN_new(), * y = BN_new();
+    BN_hex2bn(&x, "678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb6");
+    BN_hex2bn(&y, "49f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f");
+    PK = create_ec_point(x, y);
 }
 
 bool verify(BIGNUM* e_, BIGNUM* r_, BIGNUM* s_) {
