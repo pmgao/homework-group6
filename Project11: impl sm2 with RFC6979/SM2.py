@@ -50,40 +50,24 @@ def Tonelli_Shanks(y, p):
     return r
 
 
-def exgcd(j, k):
-    if j == k:
-        return j, 1, 0
+def inv(a, n):
+    def ext_gcd(a, b, arr):
+        if b == 0:
+            arr[0] = 1
+            arr[1] = 0
+            return a
+        g = ext_gcd(b, a % b, arr)
+        t = arr[0]
+        arr[0] = arr[1]
+        arr[1] = t - int(a / b) * arr[1]
+        return g
 
-    j_array = [j]
-    k_array = [k]
-    q_array = []
-    r_array = []
-
-    while True:
-        q = k_array[-1] // j_array[-1]
-        r = k_array[-1] % j_array[-1]
-        q_array.append(q)
-        r_array.append(r)
-        k_array.append(j_array[-1])
-        j_array.append(r)
-        if r == 0:
-            break
-
-    gcd = j_array[-1]
-    x_array = [1]
-    y_array = [0]
-    total_steps = len(j_array) - 2
-
-    for i in range(total_steps, -1, -1):
-        y_array.append(x_array[total_steps - i])
-        x_array.append(y_array[total_steps - i] - q_array[i] * x_array[total_steps - i])
-
-    return gcd, x_array[-1], y_array[-1]
-
-
-def mod_inverse(j, n):
-    gcd, x, _ = exgcd(j, n)
-    return x % n if gcd == 1 else -1
+    arr = [0, 1, ]
+    gcd = ext_gcd(a, n, arr)
+    if gcd == 1:
+        return (arr[0] % n + n) % n
+    else:
+        return -1
 
 
 def elliptic_add(p, q):
@@ -95,7 +79,7 @@ def elliptic_add(p, q):
         # Swap p and q if px > qx.
         if p[0] > q[0]:
             p, q = q, p
-        slope = (q[1] - p[1]) * mod_inverse(q[0] - p[0], P) % P
+        slope = (q[1] - p[1]) * inv(q[0] - p[0], P) % P
 
         x = (slope ** 2 - p[0] - q[0]) % P
         y = (slope * (p[0] - x) - p[1]) % P
@@ -104,7 +88,7 @@ def elliptic_add(p, q):
 
 
 def elliptic_double(p):
-    slope = (3 * p[0] ** 2 + A) * mod_inverse(2 * p[1], P) % P
+    slope = (3 * p[0] ** 2 + A) * inv(2 * p[1], P) % P
 
     x = (slope ** 2 - 2 * p[0]) % P
     y = (slope * (p[0] - x) - p[1]) % P
@@ -173,7 +157,7 @@ def sign(private_key, message, Z_A):
     random_point = elliptic_multiply(k, G)
 
     r = (e + random_point[0]) % N
-    s = (mod_inverse(1 + private_key, N) * (k - r * private_key)) % N
+    s = (inv(1 + private_key, N) * (k - r * private_key)) % N
     return (r, s)
 
 
