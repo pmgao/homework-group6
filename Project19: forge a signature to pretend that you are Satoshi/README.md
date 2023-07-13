@@ -4,7 +4,7 @@
 
 
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230713120247318.png" alt="image-20230713120247318"  />
+<img src=".\md_image\1.png" alt="image-20230713120247318"  />
 
 ## 项目结果
 
@@ -62,4 +62,4 @@ BN_rand(u, BN_num_bits(N), 0, 0);
 
 运行结果如下图所示：
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230713121006179.png" alt="image-20230713121006179" style="zoom:80%;" />
+<img src=".\md_image\2.png" alt="image-20230713121006179" style="zoom:80%;" />
