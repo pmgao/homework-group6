@@ -16,14 +16,13 @@ BIGNUM* SK = BN_new();
 
 
 void init() {
-	N = EC_GROUP_get0_order(curve);
-	G = EC_GROUP_get0_generator(curve);
-	//BN_hex2bn(&SK, "83bb90c52a7aabc2cfc4eaf90bd32e19894454d1f0e8e526a936f47cfd2a1e91");
-	//EC_POINT_mul(curve, PK, SK, nullptr, nullptr, BN_CTX_new());
-	BN_hex2bn(&PK, "04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f");
+    N = EC_GROUP_get0_order(curve);
+    G = EC_GROUP_get0_generator(curve);
+    BN_hex2bn(&SK, "83bb90c52a7aabc2cfc4eaf90bd32e19894454d1f0e8e526a936f47cfd2a1e91");
+    EC_POINT_mul(curve, PK, SK, nullptr, nullptr, BN_CTX_new());
 }
 
-bool verify(BIGNUM* e_,BIGNUM* r_,BIGNUM* s_) {
+bool verify(BIGNUM* e_, BIGNUM* r_, BIGNUM* s_) {
     BIGNUM* w = BN_new();
     BN_mod_inverse(w, s_, N, BN_CTX_new());
 
@@ -86,8 +85,8 @@ void forge() {
 }
 
 int main() {
-	init();
-	forge();
+    init();
+    forge();
 
-	return 0;
+    return 0;
 }
