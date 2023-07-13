@@ -64,6 +64,12 @@ EC_GROUP* curve = EC_GROUP_new_by_curve_name(NID_secp256k1);
     BN_mod_mul(e_, e_, r_, N, BN_CTX_new());
 
     cout << "forged signature:(" << BN_bn2hex(r_) << ", " << BN_bn2hex(s_) << ")\n";
+    if (!verify(e_, r_, s_)) {
+        cout << "verified success!\n";
+    }
+    else {
+        cout << "verified failed!\n";
+    }
 ```
 
 运行结果如下图所示：
