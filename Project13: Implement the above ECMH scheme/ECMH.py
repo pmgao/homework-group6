@@ -76,7 +76,7 @@ def msg_to_dot(msg):
             x = int(mdigest, 16)
             if Legendre(x, P):
                 break
-            mdigest = sm3.sm3_hash(func.bytes_to_list(bytes(m, encoding='utf-8')))
+            mdigest = sm3.sm3_hash(func.bytes_to_list(bytes(mdigest, encoding='utf-8')))
         return x
 
     def get_y(x):
