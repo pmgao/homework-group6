@@ -15,6 +15,6 @@ PublicKey_bob = elliptic_multiply(GPoint, privKey_bob)
 PublicKey_alice = elliptic_multiply(GPoint, privKey_alice)
 ```
 
-<img src=".\md_image\2.png"alt="image-20230715142534911"  />
+<img src=".\md_image\2.png" alt="image-20230715142534911"  />
 
 此时的Schnorr便可一齐验证通过二者的签名数据，相当于对签名进行了聚合并只需作一次验证，此种批量验证的策略提高了签名的性能优势，向外界隐藏了此次交易是一笔多签交易还是非多签交易的隐私信息。
