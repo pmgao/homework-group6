@@ -9,24 +9,14 @@ P = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
 N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 
 
-def inv(a, n):
-    def ext_gcd(a, b, arr):
-        if b == 0:
-            arr[0] = 1
-            arr[1] = 0
-            return a
-        g = ext_gcd(b, a % b, arr)
-        t = arr[0]
-        arr[0] = arr[1]
-        arr[1] = t - int(a / b) * arr[1]
-        return g
-
-    arr = [0, 1, ]
-    gcd = ext_gcd(a, n, arr)
-    if gcd == 1:
-        return (arr[0] % n + n) % n
-    else:
-        return -1
+def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
+    lm, hm = 1, 0
+    low, high = a % n, n
+    while low > 1:
+        ratio = high // low
+        nm, new = hm - lm * ratio, high - low * ratio
+        lm, low, hm, high = nm, new, lm, low
+    return lm % n
 
 
 def elliptic_add(p, q):
