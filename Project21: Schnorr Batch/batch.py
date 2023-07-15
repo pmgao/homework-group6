@@ -1,21 +1,20 @@
 import hashlib
 import sys
 
-# secp256k1 domain parameters
-Pcurve = 2 ** 256 - 2 ** 32 - 2 ** 9 - 2 ** 8 - 2 ** 7 - 2 ** 6 - 2 ** 4 - 1  # The proven prime
-Acurve = 0  # These two defines the elliptic curve. y^2 = x^3 + Acurve * x + Bcurve
-Bcurve = 7
+# secp256k1
+N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+Pcurve = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+Acurve = 0x0000000000000000000000000000000000000000000000000000000000000000
+Bcurve = 0x0000000000000000000000000000000000000000000000000000000000000007
 Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
 Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
-GPoint = (int(Gx), int(Gy))  # This is our generator point.
-N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141  # Number of points in the field
+GPoint = [Gx, Gy]
 
-# Replace with any private key
 privKey_bob = 77664663271170673620859955297191590031376319879614890096024130175852238738811
 privKey_alice = 89652975980192045565381556847798492396888680198332589948144044069692575244768
 
 
-def modinv(a, n=Pcurve):  # Extended Euclidean Algorithm/'division' in elliptic curves
+def modinv(a, n=Pcurve):
     lm, hm = 1, 0
     low, high = a % n, n
     while low > 1:
@@ -25,67 +24,59 @@ def modinv(a, n=Pcurve):  # Extended Euclidean Algorithm/'division' in elliptic 
     return lm % n
 
 
-def ECadd(a, b):  # EC Addition
+def elliptic_add(a, b):
     LamAdd = ((b[1] - a[1]) * modinv(b[0] - a[0], Pcurve)) % Pcurve
     x = (LamAdd * LamAdd - a[0] - b[0]) % Pcurve
     y = (LamAdd * (a[0] - x) - a[1]) % Pcurve
     return (x, y)
 
 
-def ECdouble(a):  # EC Doubling
+def elliptic_double(a):
     Lam = ((3 * a[0] * a[0] + Acurve) * modinv((2 * a[1]), Pcurve)) % Pcurve
     x = (Lam * Lam - 2 * a[0]) % Pcurve
     y = (Lam * (a[0] - x) - a[1]) % Pcurve
     return (x, y)
 
 
-def EccMultiply(GenPoint, ScalarHex):  # Doubling & Addition
+def elliptic_multiply(GenPoint, ScalarHex):
     if ScalarHex == 0 or ScalarHex >= N: raise Exception("Invalid Scalar/Private Key")
     ScalarBin = str(bin(ScalarHex))[2:]
     Q = GenPoint
     for i in range(1, len(ScalarBin)):
-        Q = ECdouble(Q)
+        Q = elliptic_double(Q)
         if ScalarBin[i] == "1":
-            Q = ECadd(Q, GenPoint)
+            Q = elliptic_add(Q, GenPoint)
     return (Q)
 
 
 if __name__ == "__main__":
-    msg = "Hello, World!"
-
-    if len(sys.argv) > 1:
-        msg = str(sys.argv[1])
+    msg = "202100460055"
 
     print("Message: ", msg)
     msg = msg.encode()
 
-    PublicKey_bob = EccMultiply(GPoint, privKey_bob)
-    PublicKey_alice = EccMultiply(GPoint, privKey_alice)
-
-    XPublicKey_bob = PublicKey_bob[0]
-    YPublicKey_bob = PublicKey_bob[1]
-
-    XPublicKey_alice = PublicKey_alice[0]
-    YPublicKey_alice = PublicKey_alice[1]
+    PublicKey_bob = elliptic_multiply(GPoint, privKey_bob)
+    PublicKey_alice = elliptic_multiply(GPoint, privKey_alice)
 
     print("Public Key Bob:")
-    print("XCoor is: " + str(XPublicKey_bob))
-    print("YCoor is: " + str(YPublicKey_bob))
+    print("X: " + str(PublicKey_bob[0]))
+    print("Y: " + str(PublicKey_bob[1]))
 
     print("Public Key Alice:")
-    print("XCoor is: " + str(XPublicKey_alice))
-    print("YCoor is: " + str(YPublicKey_alice))
+    print("X: " + str(PublicKey_alice[0]))
+    print("Y: " + str(PublicKey_alice[1]))
+    print()
 
-    P = ECadd(PublicKey_bob, PublicKey_alice)
+    P = elliptic_add(PublicKey_bob, PublicKey_alice)
     print("P:", P)
 
     k1_bob = 77664663271170673620859955297191590031376319879614890096024130175852238738811 - 1
     k2_alice = 89652975980192045565381556847798492396888680198332589948144044069692575244768 - 1
 
-    R1 = EccMultiply(GPoint, k1_bob)
-    R2 = EccMultiply(GPoint, k2_alice)
+    R1 = elliptic_multiply(GPoint, k1_bob)
+    R2 = elliptic_multiply(GPoint, k2_alice)
 
-    R = ECadd(R1, R2)
+    R = elliptic_add(R1, R2)
     print("R: ", R)
 
     P_bytes = (P[0]).to_bytes(32, 'big')
@@ -103,11 +94,11 @@ if __name__ == "__main__":
     s = (s1 + s2) % N
     print("s:", s)
 
-    v1 = EccMultiply(GPoint, s)
+    v1 = elliptic_multiply(GPoint, s)
 
-    inter = EccMultiply(P, H)
+    inter = elliptic_multiply(P, H)
 
-    v2 = ECadd(R, inter)
+    v2 = elliptic_add(R, inter)
 
     if v1 == v2:
         print("Verified!")
