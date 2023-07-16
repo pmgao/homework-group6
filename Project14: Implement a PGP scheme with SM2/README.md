@@ -1,6 +1,6 @@
 # Project14: Implement a PGP scheme with SM2
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230716104317963.png" alt="image-20230716104317963"  />
+<img src=".\md_image\1.png" alt="image-20230716104317963"  />
 
 具体流程如上图所示，在具体实现时，需要用到公钥加密算法与对称密码算法，我们选取的公钥加密算法为SM2曲线上的SM2加密算法，对称密码算法为AES-128-ECB模式。
 
@@ -49,4 +49,4 @@ def PGP_decrypt(ciphertext1, ciphertext2):
 
 运行结果如下图所示：
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230716105807698.png" alt="image-20230716105807698"  />
+<img src=".\md_image\2.png" alt="image-20230716105807698"  />
