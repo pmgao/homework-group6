@@ -19,21 +19,15 @@ def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
     return lm % n
 
 
-def elliptic_add(p, q):
-    if p == 0:
-        return q
-    elif q == 0:
-        return p
-    else:
-        # Swap p and q if px > qx.
-        if p[0] > q[0]:
-            p, q = q, p
-        slope = (q[1] - p[1]) * inv(q[0] - p[0], P) % P
-
-        x = (slope ** 2 - p[0] - q[0]) % P
-        y = (slope * (p[0] - x) - p[1]) % P
-
-        return x, y
+def elliptic_add(a, b):
+    if a == 0:
+        return b
+    elif b == 0:
+        return a
+    LamAdd = ((b[1] - a[1]) * inv(b[0] - a[0], P)) % P
+    x = (LamAdd * LamAdd - a[0] - b[0]) % P
+    y = (LamAdd * (a[0] - x) - a[1]) % P
+    return (x, y)
 
 
 def elliptic_inv(p):
@@ -46,14 +40,6 @@ def elliptic_sub(p, q):
 
 def ADD(ecmh, msg):
     return elliptic_add(ecmh, msg_to_dot(msg))
-
-
-def EC_double(p):
-    r = []
-    slope = (3 * p[0] ** 2 + A) * inv(2 * p[1], P) % P
-    r.append((slope ** 2 - 2 * p[0]) % P)
-    r.append((slope * (p[0] - r[0]) - p[1]) % P)
-    return (r[0], r[1])
 
 
 def msg_to_dot(msg):
