@@ -10,6 +10,7 @@ G_X = 0x421DEBD61B62EAB6746434EBC3CC315E32220B3BADD50BDC4C4E6C147FEDD43D
 G_Y = 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2
 G = (G_X, G_Y)
 
+
 def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
     lm, hm = 1, 0
     low, high = a % n, n
@@ -20,42 +21,29 @@ def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
     return lm % n
 
 
-def elliptic_add(p, q):
-    if p == 0:
-        return q
-    elif q == 0:
-        return p
-    else:
-        # Swap p and q if px > qx.
-        if p[0] > q[0]:
-            p, q = q, p
-        slope = (q[1] - p[1]) * inv(q[0] - p[0], P) % P
-
-        x = (slope ** 2 - p[0] - q[0]) % P
-        y = (slope * (p[0] - x) - p[1]) % P
-
-        return x, y
+def elliptic_add(a, b):
+    LamAdd = ((b[1] - a[1]) * inv(b[0] - a[0], P)) % P
+    x = (LamAdd * LamAdd - a[0] - b[0]) % P
+    y = (LamAdd * (a[0] - x) - a[1]) % P
+    return (x, y)
 
 
-def elliptic_double(p):
-    slope = (3 * p[0] ** 2 + A) * inv(2 * p[1], P) % P
-
-    x = (slope ** 2 - 2 * p[0]) % P
-    y = (slope * (p[0] - x) - p[1]) % P
-
-    return x, y
+def elliptic_double(a):
+    Lam = ((3 * a[0] * a[0] + A) * inv((2 * a[1]), P)) % P
+    x = (Lam * Lam - 2 * a[0]) % P
+    y = (Lam * (a[0] - x) - a[1]) % P
+    return (x, y)
 
 
-def elliptic_multiply(s, p):
-    r = (0, 0)  # 0 representing a point at infinity
-
-    while s > 0:
-        if s & 1:
-            r = elliptic_add(r, p)
-        p = elliptic_double(p)
-        s >>= 1
-
-    return r
+def elliptic_multiply(ScalarHex, GenPoint):
+    if ScalarHex == 0 or ScalarHex >= N: raise Exception("Invalid Scalar/Private Key")
+    ScalarBin = str(bin(ScalarHex))[2:]
+    Q = GenPoint
+    for i in range(1, len(ScalarBin)):
+        Q = elliptic_double(Q)
+        if ScalarBin[i] == "1":
+            Q = elliptic_add(Q, GenPoint)
+    return (Q)
 
 
 def get_bit_num(x):
@@ -89,7 +77,7 @@ def precompute(ID, a, b, G_X, G_Y, x_A, y_A):
 
 
 def generate_key():
-    private_key = int(secrets.token_hex(32), 16)
+    private_key = int(secrets.token_hex(32), 16) % N
     public_key = elliptic_multiply(private_key, G)
     return private_key, public_key
 
@@ -144,7 +132,7 @@ if __name__ == "__main__":
     while signature is None:
         sk, pk = generate_key()
         print('new pk：', pk)
-        Z_A = precompute(ID, A, B, G_X, G_Y , pk[0], pk[1])
+        Z_A = precompute(ID, A, B, G_X, G_Y, pk[0], pk[1])
         signature = sign(sk, message, str(Z_A))
 
     print("sign: ", signature)
