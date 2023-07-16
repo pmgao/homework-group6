@@ -1,12 +1,14 @@
+import secrets
+from hashlib import sha256
 from gmssl import sm3, func
-from random import randint
-from math import sqrt
 
-# secp256k1
-A = 0x0000000000000000000000000000000000000000000000000000000000000000
-B = 0x0000000000000000000000000000000000000000000000000000000000000007
-P = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
+A = 0x787968B4FA32C3FD2417842E73BBFEFF2F3C848B6831D7E0EC65228B3937E498
+B = 0x63E4C6D3B23B0C849CF84241484BFE48F61D59A5B16BA06E6E12D1DA27C5249A
+P = 0x8542D69E4C044F18E8B92435BF6FF7DE457283915C45517D722EDB8B08F1DFC3
+N = 0x8542D69E4C044F18E8B92435BF6FF7DD297720630485628D5AE74EE7C32E79B7
+G_X = 0x421DEBD61B62EAB6746434EBC3CC315E32220B3BADD50BDC4C4E6C147FEDD43D
+G_Y = 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2
+G = (G_X, G_Y)
 
 
 def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
@@ -20,80 +22,119 @@ def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
 
 
 def elliptic_add(a, b):
-    if a == 0:
-        return b
-    elif b == 0:
-        return a
     LamAdd = ((b[1] - a[1]) * inv(b[0] - a[0], P)) % P
     x = (LamAdd * LamAdd - a[0] - b[0]) % P
     y = (LamAdd * (a[0] - x) - a[1]) % P
     return (x, y)
 
 
-def elliptic_inv(p):
-    return [p[0], P - p[1]]
-
-
-def elliptic_sub(p, q):
-    return elliptic_add(p, elliptic_inv(q))
-
-
-def ADD(ecmh, msg):
-    return elliptic_add(ecmh, msg_to_dot(msg))
-
-
-def msg_to_dot(msg):
-    def Legendre(y, p):
-        return pow(y, (p - 1) // 2, p)
-
-    def msg_to_x(m):
-        mdigest = sm3.sm3_hash(func.bytes_to_list(bytes(m, encoding='utf-8')))
-        while 1:  # cycle until x belong to QR
-            x = int(mdigest, 16)
-            if Legendre(x, P):
-                break
-            mdigest = sm3.sm3_hash(func.bytes_to_list(bytes(mdigest, encoding='utf-8')))
-        return x
-
-    def get_y(x):
-        right = (x ** 3 + 7) % P
-        while 1:
-            a = randint(0, P)
-            if Legendre(a, P) == P - 1:
-                break
-        base = int(a + sqrt(a ** 2 - right))
-        expo = (P + 1) // 2
-        y = pow(base, expo, P)
-        return y
-
-    x = msg_to_x(msg)
-    y = get_y(x)
+def elliptic_double(a):
+    Lam = ((3 * a[0] * a[0] + A) * inv((2 * a[1]), P)) % P
+    x = (Lam * Lam - 2 * a[0]) % P
+    y = (Lam * (a[0] - x) - a[1]) % P
     return (x, y)
 
 
-def single(msg):
-    return ADD(0, msg)
+def elliptic_multiply(ScalarHex, GenPoint):
+    if ScalarHex == 0 or ScalarHex >= N: raise Exception("Invalid Scalar/Private Key")
+    ScalarBin = str(bin(ScalarHex))[2:]
+    Q = GenPoint
+    for i in range(1, len(ScalarBin)):
+        Q = elliptic_double(Q)
+        if ScalarBin[i] == "1":
+            Q = elliptic_add(Q, GenPoint)
+    return (Q)
 
 
-def remove(ecmh, msg):
-    return elliptic_sub(ecmh, msg_to_dot(msg))
+def get_bit_num(x):
+    if isinstance(x, int):
+        num = 0
+        while x:
+            num += 1
+            x >>= 1
+        return num
+    elif isinstance(x, str):
+        return len(x.encode()) * 8
+    elif isinstance(x, bytes):
+        return len(x) * 8
+    return 0
 
 
-def combine(msg_set):
-    ans = single(msg_set[0])
-    num = len(msg_set) - 1
-    for i in range(num):
-        ans = ADD(ans, msg_set[i + 1])
-    return ans
+def precompute(ID, a, b, G_X, G_Y, x_A, y_A):
+    a = str(a)
+    b = str(b)
+    G_X = str(G_X)
+    G_Y = str(G_Y)
+    x_A = str(x_A)
+    y_A = str(y_A)
+    ENTL = str(get_bit_num(ID))
+
+    joint = ENTL + ID + a + b + G_X + G_Y + x_A + y_A
+    joint_b = bytes(joint, encoding='utf-8')
+
+    digest = sm3.sm3_hash(func.bytes_to_list(joint_b))
+    return int(digest, 16)
+
+
+def generate_key():
+    private_key = int(secrets.token_hex(32), 16) % N
+    public_key = elliptic_multiply(private_key, G)
+    return private_key, public_key
+
+
+def sign(private_key, message, Z_A):
+    _M = Z_A + message
+    _M_b = bytes(_M, encoding='utf-8')
+    e = sm3.sm3_hash(func.bytes_to_list(_M_b))  # str
+    e = int(e, 16)
+    k = int(sha256(
+        (str(private_key) + sm3.sm3_hash(func.bytes_to_list(bytes(message, encoding='utf-8')))).encode()).hexdigest(),
+            16)  # 伪随机k的生成_RFC6979
+    if k >= P:
+        return None
+    random_point = elliptic_multiply(k, G)
+
+    r = (e + random_point[0]) % N
+    s = (inv(1 + private_key, N) * (k - r * private_key)) % N
+    return (r, s)
+
+
+def verify(public_key, ID, message, signature):
+    r = signature[0]
+    s = signature[1]
+
+    Z = precompute(ID, A, B, G_X, G_Y, public_key[0], public_key[1])
+
+    _M = str(Z) + message
+    _M_b = bytes(_M, encoding='utf-8')
+    e = sm3.sm3_hash(func.bytes_to_list(_M_b))  # str
+    e = int(e, 16)
+    t = (r + s) % N
+
+    point = elliptic_multiply(s, G)
+    point1 = elliptic_multiply(t, public_key)
+    point = elliptic_add(point, point1)
+
+    x1 = point[0]
+    R = (e + x1) % N
+
+    return R == r
 
 
 if __name__ == "__main__":
-    m1 = "202100460055"
-    m2 = "1234567890"
+    sk, pk = generate_key()
+    print('pk：', pk)
+    message = input("Input your message: ")
+    ID = input("Input your ID: ")
 
-    print('HASH(m1)\t\t\t', single(m1))
-    print('HASH(m2)\t\t\t', single(m2))
-    print('HASH([m1, m2])\t\t', combine([m1, m2]))
-    print('HASH([m2, m1])\t\t', combine([m2, m1]))
-    print('HASH(m1) + HASH(m2))', ADD(single(m1), m2))
-    print('HASH([m1, m2]) + HASH(m2)', remove(combine([m1, m2]), m2))
+    Z_A = precompute(ID, A, B, G_X, G_Y, pk[0], pk[1])
+    signature = sign(sk, message, str(Z_A))
+    while signature is None:
+        sk, pk = generate_key()
+        print('new pk：', pk)
+        Z_A = precompute(ID, A, B, G_X, G_Y, pk[0], pk[1])
+        signature = sign(sk, message, str(Z_A))
+
+    print("sign: ", signature)
+    if verify(pk, ID, message, signature) == 1:
+        print('verified!')
