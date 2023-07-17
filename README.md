@@ -16,7 +16,7 @@
 
 本课程共有21个项目，完成了其中的19个项目，未完成Project 6与Project 7两个项目。
 
-| 项目序号  | 项目名称                                                     | 文件夹对应                                                   | 项目完成情况 |
+| 项目序号  | 项目名称                                                     | 对应项目文件夹                                                 | 项目完成情况 |
 | :-------: | ------------------------------------------------------------ | ------------------------------------------------------------ | :----------: |
 | Project1  | implement the naïve birthday attack of reduced SM3           | [**birthday attack of SM3** ](https://github.com/Borpord/homework-group6/tree/main/Project01:%20implement%20the%20na%C3%AFve%20birthday%20attack%20of%20reduced%20SM3) |      ✔️       |
 | Project2  | implement the Rho method of reduced SM3                      | [**rho attack of SM3** ](https://github.com/Borpord/homework-group6/tree/main/Project02%3A%20implement%20the%20Rho%20method%20of%20reduced%20SM3) |      ✔️       |
