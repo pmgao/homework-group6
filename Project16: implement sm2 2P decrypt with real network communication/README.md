@@ -1,6 +1,6 @@
 # Project16: implement sm2 2P decrypt with real network communication
 
-![image-20230717163142333](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230717163142333.png)
+<img src=".\md_image\1.png" alt="image-20230717163512842"  />
 
 SM2 two-party decrypt是指网络中的两方共同协作，参与到对同一个密文进行解密的过程当中来。
 
@@ -24,6 +24,6 @@ G = (G_X, G_Y)
 
 运行结果如下图所示：
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230717163512842.png" alt="image-20230717163512842"  />
+<img src=".\md_image\2.png" alt="image-20230717163512842"  />
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230717163529174.png" alt="image-20230717163529174" style="zoom:80%;" />
+<img src=".\md_image\3.png" alt="image-20230717163529174" style="zoom:80%;" />
