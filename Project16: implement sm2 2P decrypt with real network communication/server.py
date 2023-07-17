@@ -4,23 +4,21 @@ from sm2 import *
 
 def Gen_Key(P1):
     d2 = secrets.randbelow(N)
-    tmp = mod_inverse(d2, N)
-    tmp = elliptic_multiply(tmp, P1)
-    P = elliptic_sub(tmp, G)
+    temp = elliptic_multiply(inv(d2, N), P1)
+    P = elliptic_sub(temp, G)
     return d2, P
 
 
 def T1_to_T2(T1):
-    T2 = elliptic_multiply(mod_inverse(d2, N), T1)
+    T2 = elliptic_multiply(inv(d2, N), T1)
     return T2
 
 
 if __name__ == "__main__":
-    # 建立连接
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind(('', 12300))
     print("server started...")
-    # Gen_Key
+
     data, addr = s.recvfrom(1024)
     data = data.decode()
     flag = data.index('||')
@@ -29,7 +27,6 @@ if __name__ == "__main__":
     data = str(P[0]) + '||' + str(P[1])
     s.sendto(data.encode(), addr)
 
-    # P1_to_P2
     data, addr = s.recvfrom(1024)
     data = data.decode()
     flag = data.index('||')
@@ -39,4 +36,4 @@ if __name__ == "__main__":
     s.sendto(data.encode(), addr)
 
     s.close()
-    print("server finished...")
+    print("server finished")
