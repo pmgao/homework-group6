@@ -5,8 +5,7 @@ from sm2 import *
 
 def Gen_Key(P1):
     d2 = random.randint(0, N - 1)
-    tmp = elliptic_multiply(mod_inverse(d2, N), P1)
-    P = elliptic_sub(tmp, G)
+    P = elliptic_sub(elliptic_multiply(inv(d2, N), P1), G)
     return d2, P
 
 
@@ -24,19 +23,16 @@ def Gen_r_s2_s3(d2, Q1, e):
 
 
 if __name__ == "__main__":
-    # 建立连接
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind(('', 12300))
     print("starting server...")
 
-    # 【Gen_Key】<——P1——
     data, addr = s.recvfrom(1024)
     data = data.decode()
     flag1 = data.index('|')
     P1 = (int(data[:flag1]), int(data[flag1 + 1:]))
     d2, P = Gen_Key(P1)
 
-    # 【Gen_r_s2_s3】 <——(Q1, e)—— r, s2, s3
     data, addr = s.recvfrom(1024)
     data = data.decode()
     flag1 = data.index('|')
@@ -48,4 +44,4 @@ if __name__ == "__main__":
     s.sendto(data.encode(), addr)
     s.close()
 
-    print("server finished...")
+    print("server finished")
