@@ -37,7 +37,7 @@
 | Project17 | 比较Firefox和谷歌的记住密码插件的实现区别                    | [**compare FireFox with Google** ](https://github.com/Borpord/homework-group6/tree/main/Project17%EF%BC%9A%E6%AF%94%E8%BE%83Firefox%E5%92%8C%E8%B0%B7%E6%AD%8C%E7%9A%84%E8%AE%B0%E4%BD%8F%E5%AF%86%E7%A0%81%E6%8F%92%E4%BB%B6%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8C%BA%E5%88%AB) |      ✔️       |
 | Project18 | send a tx on Bitcoin testnet, and parse the tx data down to every bit, better write script yourself | [**send a tx on Bitcoin testnet** ](https://github.com/Borpord/homework-group6/tree/main/Project18%3A%20send%20a%20tx%20on%20Bitcoin%20testnet%2C%20and%20parse%20the%20tx%20data%20down%20to%20every%20bit%2C%20better%20write%20script%20yourself) |      ✔️       |
 | Project19 | forge a signature to pretend that you are Satoshi            | [**forge a signature** ](https://github.com/Borpord/homework-group6/tree/main/Project19%3A%20forge%20a%20signature%20to%20pretend%20that%20you%20are%20Satoshi) |      ✔️       |
-| Project21 | Schnorr Bacth                                                | [**Schnorr Batch** ](https://github.com/Borpord/homework-group6/tree/main/Project21%3A%20Schnorr%20Batch) |      ✔️       |
+| Project21 | Schnorr Batch                                                | [**Schnorr Batch** ](https://github.com/Borpord/homework-group6/tree/main/Project21%3A%20Schnorr%20Batch) |      ✔️       |
 | Project22 | research report on MPT                                       | [**research report on MPT** ](https://github.com/Borpord/homework-group6/tree/main/Project22%3A%20research%20report%20on%20MPT) |      ✔️       |
 
 其中：
