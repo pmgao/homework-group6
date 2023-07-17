@@ -3,13 +3,11 @@ from sm2 import *
 import random
 from gmssl import sm3, func
 import socket
-import time
 
 
 def Gen_Key():
     d1 = random.randint(0, N - 1)
-    tmp = mod_inverse(d1, N)
-    P1 = elliptic_multiply(tmp, G)
+    P1 = elliptic_multiply(inv(d1, N), G)
     return d1, P1
 
 
@@ -30,17 +28,13 @@ def Sign(d1, k1, r, s2, s3):
 
 
 if __name__ == "__main__":
-    # 建立连接
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     print("connected...")
 
-    # 【Gen_Key】 —— P1 ——>
     d1, P1 = Gen_Key()
     data = str(P1[0]) + '|' + str(P1[1])
     s.sendto(data.encode(), ("127.0.0.1", 12300))
 
-    # 【Gen_r_s2_s3】 —— Q1, e ——>
-    time.sleep(1)
     ID_client = 'client'
     ID_server = 'server'
     Z = ID_client + ID_server
@@ -49,7 +43,6 @@ if __name__ == "__main__":
     data = str(Q1[0]) + '|' + str(Q1[1]) + '||' + e
     s.sendto(data.encode(), ("127.0.0.1", 12300))
 
-    # 【Sign】 <—— r, r2, r3 ——
     data, addr = s.recvfrom(1024)
     data = data.decode()
     flag1 = data.index('|')
@@ -61,4 +54,4 @@ if __name__ == "__main__":
     print("Sign:", s_)
 
     s.close()
-    print("client finished...")
+    print("client finished")
