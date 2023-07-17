@@ -1,6 +1,6 @@
 # Project15: implement sm2 2P sign with real network communication
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230717145426632.png" alt="image-20230717145426632"  />
+<img src=".\md_image\1.png" alt="image-20230717145426632"  />
 
 SM2 two-party sign是指网络中的两方共同写作，参与到同一个签名生成的过程当中来。
 
@@ -26,6 +26,6 @@ G = (G_X, G_Y)
 
 运行结果如下图所示：
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230717150039407.png" alt="image-20230717150039407" style="zoom:80%;" />
+<img src=".\md_image\2.png" alt="image-20230717150039407" style="zoom:80%;" />
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230717150118730.png" alt="image-20230717150118730" style="zoom:80%;" />
+<img src=".\md_image\3.png" alt="image-20230717150118730" style="zoom:80%;" />
