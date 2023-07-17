@@ -2,7 +2,7 @@
 
 <img src=".\md_image\1.png" alt="image-20230717145426632"  />
 
-SM2 two-party sign是指网络中的两方共同写作，参与到同一个签名生成的过程当中来。
+SM2 two-party sign是指网络中的两方共同协作，参与到同一个签名生成的过程当中来。
 
 在具体实现时，为了模拟网络通信的环境，我们使用了Python中的socket库，并假设上图中的左侧为client，右侧为server。大致流程可分为以下三步：
 
