@@ -209,9 +209,9 @@ void CF_for_simd(uint32_t* V, int* BB) {
 
 void sm3_simd(uint8_t* plaintext, uint32_t* hash_val, size_t len) {
     size_t i;
-    uint32_t n = bit_stuffing(plaintext, len) / 64;
+    uint32_t n = bit_stuffing(plaintext, len) >> 6;
     for (i = 0; i < n; i++) {
-        CF_for_simd(IV, (int*)&plaintext_after_stuffing[i * 64]);
+        CF_for_simd(IV, (int*)&plaintext_after_stuffing[i << 6]);
     }
     for (i = 0; i < 8; i++) {
         hash_val[i] = byte_swap32(IV[i]);
