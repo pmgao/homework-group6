@@ -3,7 +3,7 @@
 #include<string.h>
 #include<intrin.h>
 
-#define MAX_LEN 2<<10
+#define MAX_LEN 2<<12
 #define rol(x,j) ((x<<j)|(uint32_t(x)>>(32-j)))
 #define P0(x) ((x) ^ rol((x), 9) ^ rol((x), 17))
 #define P1(x) ((x) ^ rol((x), 15) ^ rol((x), 23))
