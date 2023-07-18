@@ -3,7 +3,7 @@
 #include<string.h>
 #include<intrin.h>
 
-#define MAX_LEN 2<<12
+#define MAX_LEN 2<<10
 #define rol(x,j) ((x<<j)|(uint32_t(x)>>(32-j)))
 #define P0(x) ((x) ^ rol((x), 9) ^ rol((x), 17))
 #define P1(x) ((x) ^ rol((x), 15) ^ rol((x), 23))
@@ -177,14 +177,7 @@ uint32_t bit_stuffing(uint8_t* plaintext, size_t len) {
     }
     plaintext_after_stuffing[len] = static_cast <char>(0x80);
     for (i = len + 1; i + 8 <= lenth_for_p_after_stuffing; i += 8) {
-        plaintext_after_stuffing[i] = 0;
-        plaintext_after_stuffing[i + 1] = 0;
-        plaintext_after_stuffing[i + 2] = 0;
-        plaintext_after_stuffing[i + 3] = 0;
-        plaintext_after_stuffing[i + 4] = 0;
-        plaintext_after_stuffing[i + 5] = 0;
-        plaintext_after_stuffing[i + 6] = 0;
-        plaintext_after_stuffing[i + 7] = 0;
+        *(uint64_t*)(&plaintext_after_stuffing[i]) = 0;
     }
     plaintext_after_stuffing[lenth_for_p_after_stuffing - 8] = ((char*)&bit_len)[7];
     plaintext_after_stuffing[lenth_for_p_after_stuffing - 7] = ((char*)&bit_len)[6];
