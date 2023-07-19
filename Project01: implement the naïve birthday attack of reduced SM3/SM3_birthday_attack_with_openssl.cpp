@@ -32,14 +32,13 @@ int main()
 	uint64_t ilen = 0;
 	uint64_t i = 0;
 	auto t1 = steady_clock::now();
-	auto t2 = steady_clock::now();
 	while (1) {
 		itoa(i, (char*)input, 10);
 		ilen = strlen((char*)input);
 		sm3_openssl(input, ilen, output);
 		if (output[0] == tagart[0] && output[1] == tagart[1] && output[2] == tagart[2])
 		{
-			t2 = steady_clock::now();
+			auto t2 = steady_clock::now();
 			cout << "find collision!\n";
 			cout << "time = " << duration_cast<seconds>(t2 - t1).count() << " us\n";
 			break;
