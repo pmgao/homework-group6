@@ -37,7 +37,6 @@ int main()
 	int32_t q = 11;
 	int32_t i = 13;
 	auto t1 = steady_clock::now();
-	auto t2 = steady_clock::now();
 	while (1) {
 		q = F(q);
 		itoa(q, (char*)input1, 10);
@@ -50,6 +49,7 @@ int main()
 
 		if (output1[0] == output2[0] && output1[1] == output2[1] && output1[2] == output2[2] && output1[3] == output2[3])
 		{
+			auto t2 = steady_clock::now();
 			t2 = steady_clock::now();
 			cout << "find collision!\n";
 			cout << "time = " << duration_cast<microseconds>(t2 - t1).count() << " us\n";
