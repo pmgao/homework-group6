@@ -1,4 +1,4 @@
-Aliyun-Ubuntu Ampere Altra / AltraMax ARM架构 gcc/g++编译后运行
+Aliyun-Ubuntu Ampere Altra / AltraMax ARM架构处理器，使用Ubuntu 20.04系统，经过gcc/g++编译后运行: g++ aes.cc -march=armv8-a+crypto
 
 代码主要使用arm_neon.h中所提供的CPU指令集来实现。
 
@@ -17,8 +17,51 @@ vaesimcq_u8(src)：对输入进行进行逆向列混合操作。
 具体加解密流程如上图所示，其中要注意到加密过程的最后一轮不需要列混合操作；解密过程的最后一轮不需要列混合操作，且中间8轮对逆向列混合与AK操作互换了顺序，需要先求出RK经过逆向列混合之后的数据再进行AK操作。
 
 ```c++
-block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 2)));
-block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 2))));
+void aes128_enc_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44]) {
+	uint8x16_t block = vld1q_u8(in);
+
+	uint8_t* p8 = (uint8_t*)rk;
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 0)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 1)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 2)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 3)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 4)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 5)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 6)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 7)));
+	block = vaesmcq_u8(vaeseq_u8(block, vld1q_u8(p8 + 16 * 8)));
+
+	//final round 
+	block = vaeseq_u8(block, vld1q_u8(p8 + 16 * 9));
+
+	//final xor subkey
+	block = veorq_u8(block, vld1q_u8(p8 + 16 * 10));
+
+	vst1q_u8(ou, block);
+}
+
+void aes128_dec_armv8(const uint8_t in[16], uint8_t ou[16], const uint32_t rk[44]) {
+	uint8x16_t block = vld1q_u8(in);
+
+	uint8_t* p8 = (uint8_t*)rk;
+	block = vaesimcq_u8(vaesdq_u8(block, vld1q_u8(p8 + 16 * 10)));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 9))));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 8))));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 7))));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 6))));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 5))));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 4))));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 3))));
+	block = vaesimcq_u8(vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 2))));
+
+
+	//final round 
+	block = vaesdq_u8(block, vaesimcq_u8(vld1q_u8(p8 + 16 * 1)));
+	//final xor subkey
+	block = veorq_u8(block, vld1q_u8(p8 + 16 * 0));
+
+	vst1q_u8(ou, block);
+}
 ```
 
 并且在实现时要注意到大多数ARM处理器默认为小端模式，与传统的x86处理器不同，所以在开始加解密操作之前，还要对轮密钥进行大小端的数据转换。
