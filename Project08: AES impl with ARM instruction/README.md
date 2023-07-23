@@ -1,4 +1,4 @@
-Aliyun-Ubuntu Ampere Altra / AltraMax ARM架构处理器，使用Ubuntu 20.04系统，经过gcc/g++编译后运行: g++ aes.cc -march=armv8-a+crypto
+Aliyun-Ubuntu Ampere Altra / AltraMax ARM架构处理器，使用Ubuntu 20.04系统，经过gcc/g++编译后运行: g++ aes.cc -march=armv8-a+crypto or g++ aes.cpp -march=armv8-a+crypto
 
 代码主要使用arm_neon.h中所提供的CPU指令集来实现。
 
