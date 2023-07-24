@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-#pragma warning(disable: 4996)
 #include"merkletree.h"
 #include<time.h>
 #include<math.h>
@@ -10,7 +8,6 @@
 #define length uint64_t(log(double(MAX_SIZE)) / log(double(16))) + 1
 
 static uint8_t* table[MAX_SIZE];
-
 
 void generate_data() {
 	for (size_t i = 0; i < MAX_SIZE; i++) {
