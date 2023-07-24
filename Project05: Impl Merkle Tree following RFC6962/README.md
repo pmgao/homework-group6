@@ -18,6 +18,24 @@ Merkle Tree是存储hash值的一棵树，在该树的最底层可以看作一�
 
 利用存在性证明的过程完成即可。
 
+## 运行环境
+
+编译器：Visual Studio 2019，MSVC编译器，C11/C++14标准，64位环境
+
+第三方库：Openssl 1.1.1l版本
+
+操作系统：Windows10
+
+测速CPU：
+
+| 主要参数     | 参数数值                               |
+| ------------ | -------------------------------------- |
+| 型号         | AMD Ryzen 7 5800H with Radeon Graphics |
+| 架构         | x86架构                                |
+| 主频         | 3.20GHz（基准速度）                    |
+| 逻辑处理器数 | 16                                     |
+| 核心数       | 8                                      |
+
 ## 项目结果：
 
 在代码中，我们使用随机数生成了10w条数据，并通过宏常量TEST_INSERT设定这10w条数据中所要插入的数据个数。
@@ -59,6 +77,48 @@ void generate_data() {
 		bool verproof = verifyProof(&temp, mtree.root(), proof);
 		printf("[verify proof][ => %d ]\n", verproof);
 	}
+```
+
+与此同时，在构建merkle tree时，采用的杂凑算法为SHA256算法，利用openssl库所提供的函数API接口来实现。而对于输入的叶子节点数据，采用std所提供的vector数据结构来存储，自叶子节点一层开始逐层向上计算直至根节点。
+
+```c++
+	void calSHA256(char* inp, char out_buff[65]) {
+		unsigned char hash[SHA256_DIGEST_LENGTH];
+		SHA256_CTX digest;
+		SHA256_Init(&digest);
+		SHA256_Update(&digest, inp, strlen(inp));
+		SHA256_Final(hash, &digest);
+
+		for (size_t i = 0; i < SHA256_DIGEST_LENGTH; i++)
+		{
+			sprintf(out_buff + (i * 2), "%02x", hash[i]);
+		}
+		out_buff[64] = '\0';
+	}
+	vector<char*> computeTree(void (*combineFn)(char*, char*, char*), vector<char*> leaves, size_t length) {
+		size_t nodeCount = leafCountToNodeCount(leaves.size());
+		size_t delta = nodeCount - leaves.size();
+		vector<char*> tree(nodeCount);
+
+		for (size_t i = 0; i < leaves.size(); i++) {
+			tree[delta + i] = new char[65];
+			memcpy(tree[delta + i], leaves[i], length);
+			tree[delta + i][length] = 0;
+		}
+
+		size_t idx = nodeCount - 1;
+		while (idx > 0) {
+			int parent = (idx - 1) >> 1;
+
+			tree[parent] = new char[65];
+			combineFn(tree[idx - 1], tree[idx], tree[parent]);
+			tree[parent][64] = '\0';
+
+			idx -= 2;
+		}
+		return tree;
+	}
+
 ```
 
 运行结果如下图所示：
