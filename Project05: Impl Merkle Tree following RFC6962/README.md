@@ -38,48 +38,7 @@ Merkle Tree是存储hash值的一棵树，在该树的最底层可以看作一�
 
 ## 项目结果：
 
-在代码中，我们使用随机数生成了10w条数据，并通过宏常量TEST_INSERT设定这10w条数据中所要插入的数据个数。
-
-```c++
-#define TEST_INSERT 1
-#define MAX_SIZE 100000
-#define length uint64_t(log(double(MAX_SIZE)) / log(double(16))) + 1
-
-static uint8_t* table[MAX_SIZE];
-
-
-void generate_data() {
-	for (size_t i = 0; i < MAX_SIZE; i++) {
-		srand(time(NULL));
-		table[i] = new uint8_t[length];
-		for (size_t j = 0; j < length; j++) {
-			table[i][j] = rand() % 255;
-		}
-	}
-
-}
-```
-
-在main函数中，测量了构建merkle tree所需的时间，并分别使用叶子节点数组中的一个索引项来进行存在性证明，使用一个自定义变量来进行不存在性证明(1代表在merkle tree当中，0则代表不属于merkle tree)。
-
-```c++
-	{
-		//Inclusion Proof
-		vector<ProofNode> proof = mtree.proof(v[127]);
-		bool verproof = verifyProof(v[127], mtree.root(), proof);
-		printf("[verify proof][ => %d ]\n", verproof);
-	}
-
-	{
-		//Exclusion Proof
-		char temp = 0x01;
-		vector<ProofNode> proof = mtree.proof(&temp);
-		bool verproof = verifyProof(&temp, mtree.root(), proof);
-		printf("[verify proof][ => %d ]\n", verproof);
-	}
-```
-
-与此同时，在构建merkle tree时，采用的杂凑算法为SHA256算法，利用openssl库所提供的函数API接口来实现。而对于输入的叶子节点数据，采用std所提供的vector数据结构来存储，自叶子节点一层开始逐层向上计算直至根节点。
+在构建merkle tree时，采用的杂凑算法为SHA256算法，利用openssl库所提供的函数API接口来实现。而对于输入的叶子节点数据，采用std所提供的vector数据结构来存储，自叶子节点一层开始逐层向上计算直至根节点。
 
 ```c++
 	void calSHA256(char* inp, char out_buff[65]) {
@@ -119,6 +78,47 @@ void generate_data() {
 		return tree;
 	}
 
+```
+
+在代码的测试部分中，我们使用随机数生成了10w条数据，并通过宏常量TEST_INSERT设定这10w条数据中所要插入的数据个数。
+
+```c++
+#define TEST_INSERT 1
+#define MAX_SIZE 100000
+#define length uint64_t(log(double(MAX_SIZE)) / log(double(16))) + 1
+
+static uint8_t* table[MAX_SIZE];
+
+
+void generate_data() {
+	for (size_t i = 0; i < MAX_SIZE; i++) {
+		srand(time(NULL));
+		table[i] = new uint8_t[length];
+		for (size_t j = 0; j < length; j++) {
+			table[i][j] = rand() % 255;
+		}
+	}
+
+}
+```
+
+在main函数中，测量了构建merkle tree所需的时间，并分别使用叶子节点数组中的一个索引项来进行存在性证明，使用一个自定义变量来进行不存在性证明(1代表在merkle tree当中，0则代表不属于merkle tree)。
+
+```c++
+	{
+		//Inclusion Proof
+		vector<ProofNode> proof = mtree.proof(v[127]);
+		bool verproof = verifyProof(v[127], mtree.root(), proof);
+		printf("[verify proof][ => %d ]\n", verproof);
+	}
+
+	{
+		//Exclusion Proof
+		char temp = 0x01;
+		vector<ProofNode> proof = mtree.proof(&temp);
+		bool verproof = verifyProof(&temp, mtree.root(), proof);
+		printf("[verify proof][ => %d ]\n", verproof);
+	}
 ```
 
 运行结果如下图所示：
