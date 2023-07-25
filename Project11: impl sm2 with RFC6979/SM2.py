@@ -61,15 +61,7 @@ def get_bit_num(x):
 
 
 def precompute(ID, a, b, G_X, G_Y, x_A, y_A):
-    a = str(a)
-    b = str(b)
-    G_X = str(G_X)
-    G_Y = str(G_Y)
-    x_A = str(x_A)
-    y_A = str(y_A)
-    ENTL = str(get_bit_num(ID))
-
-    joint = ENTL + ID + a + b + G_X + G_Y + x_A + y_A
+    joint = str(get_bit_num(ID)) + ID + str(a) + str(b) + str(G_X) + str(G_Y) + str(x_A) + str(y_A)
     joint_b = bytes(joint, encoding='utf-8')
 
     digest = sm3.sm3_hash(func.bytes_to_list(joint_b))
@@ -83,8 +75,7 @@ def generate_key():
 
 
 def sign(private_key, message, Z_A):
-    _M = Z_A + message
-    _M_b = bytes(_M, encoding='utf-8')
+    _M_b = bytes(Z_A + message, encoding='utf-8')
     e = sm3.sm3_hash(func.bytes_to_list(_M_b))  # str
     e = int(e, 16)
     k = int(sha256(
@@ -92,9 +83,9 @@ def sign(private_key, message, Z_A):
             16)  # 伪随机k的生成_RFC6979
     if k >= P:
         return None
-    random_point = elliptic_multiply(k, G)
+    rp = elliptic_multiply(k, G)
 
-    r = (e + random_point[0]) % N
+    r = (e + rp[0]) % N
     s = (inv(1 + private_key, N) * (k - r * private_key)) % N
     return (r, s)
 
