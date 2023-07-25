@@ -1,5 +1,21 @@
 # Project9: AES / SM4 software implementation
 
+## 运行环境
+
+编译器：Visual Studio 2019，MSVC编译器，C11/C++14标准，64位环境
+
+操作系统：Windows10
+
+测速CPU：
+
+| 主要参数     | 参数数值                               |
+| ------------ | -------------------------------------- |
+| 型号         | AMD Ryzen 7 5800H with Radeon Graphics |
+| 架构         | x86架构                                |
+| 主频         | 3.20GHz（基准速度）                    |
+| 逻辑处理器数 | 16                                     |
+| 核心数       | 8                                      |
+
 ## AES
 
 代码主要使用x86处理器中所提供的AESNI指令集来实现，其调用方法与Project 8中的arm处理器所提供指令有所不同。
