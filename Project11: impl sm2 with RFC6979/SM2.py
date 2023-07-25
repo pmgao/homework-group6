@@ -11,7 +11,7 @@ G_Y = 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2
 G = (G_X, G_Y)
 
 
-def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
+def inv(a, n):
     lm, hm = 1, 0
     low, high = a % n, n
     while low > 1:
