@@ -78,6 +78,7 @@ void reusing_k_by_different_users() {
 
 int main(void) {
 	init();
+	// reusing k by different users
 	reusing_k_by_different_users();
 	return 0;
 }
