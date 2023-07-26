@@ -72,6 +72,7 @@ void same_d_and_k() {
 
 int main(void) {
 	init();
+	//used same d and k
 	same_d_and_k();
 	return 0;
 }
