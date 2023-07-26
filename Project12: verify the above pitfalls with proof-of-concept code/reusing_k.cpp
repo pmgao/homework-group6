@@ -71,6 +71,7 @@ void reusing_k() {
 
 int main(void) {
 	init();
+	// reusing k
 	reusing_k();
 	return 0;
 }
