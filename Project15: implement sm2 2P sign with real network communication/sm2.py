@@ -32,6 +32,17 @@ def elliptic_add(a, b):
     return (x, y)
 
 
+def elliptic_inv(p):
+    r = [p[0]]
+    r.append(P - p[1])
+    return r
+
+
+def elliptic_sub(p, q):
+    q_inv = elliptic_inv(q)
+    return elliptic_add(p, q_inv)
+
+
 def elliptic_double(a):
     Lam = ((3 * a[0] * a[0] + A) * inv((2 * a[1]), P)) % P
     x = (Lam * Lam - 2 * a[0]) % P
