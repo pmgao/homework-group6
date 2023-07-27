@@ -29,6 +29,18 @@ MPT树的结点总共有以下四种类型：
 
 其中每个节点最多只有可能存储了三种内容：Key，Val与nodeFlag，其中Key代表了该节点所对应范围的key，Val用来存储该节点的内容，nodeFlag则用于指示该节点所属的类型。
 
+<img src=".\md_image\2.png" alt="image-20230708235635449" style="zoom: 80%;" />
+
+### MPT树的编码方式
+
+针对MPT树的key值，共有三种不同的编码方式：
+
+1.Raw编码：使用原生的key值，不做任何处理。
+
+2.Hex编码：将一个8位字节数据用2个十六进制位来表示。
+
+3.Hex-prefix编码：将Leaf Node与Extension Node加以区分，并添加了奇偶标志。
+
 ### MPT树的增删查操作
 
 #### 增删查改——查：
