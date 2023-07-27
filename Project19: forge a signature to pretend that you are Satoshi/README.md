@@ -16,7 +16,7 @@ EC_GROUP* curve = EC_GROUP_new_by_curve_name(NID_secp256k1);
 
 采用的公钥数据使用中本聪本人在比特币网络上所发布的第一笔交易[BTC社区](https://www.blockchain.com/explorer/transactions/btc/4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b?show_adv=true)，并按照上图所述流程，分别生成随机数u与v。
 
-<img src=".\md_image\2.png" alt="image-20230713120247318"  />
+<img src=".\md_image\3.png" alt="image-20230713120247318"  />
 
 ```c++
     BN_hex2bn(&x, "678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb6");
