@@ -15,15 +15,15 @@ EC_POINT* PK = EC_POINT_new(curve);
 
 EC_POINT* create_ec_point(const BIGNUM* x, const BIGNUM* y) {
     EC_POINT* point = EC_POINT_new(curve);
-    if (point == NULL) {
+    if (point == nullptr) {
         printf("Failed to allocate memory for EC_POINT\n");
-        return NULL;
+        return nullptr;
     }
 
-    if (EC_POINT_set_affine_coordinates_GFp(curve, point, x, y, NULL) != 1) {
+    if (EC_POINT_set_affine_coordinates_GFp(curve, point, x, y, nullptr) != 1) {
         printf("Failed to set coordinates for EC_POINT\n");
         EC_POINT_free(point);
-        return NULL;
+        return nullptr;
     }
 
     return point;
@@ -51,11 +51,11 @@ bool verify(BIGNUM* e_, BIGNUM* r_, BIGNUM* s_) {
     EC_POINT_mul(curve, temp3, temp1, PK, temp2, BN_CTX_new());
 
     BIGNUM* x = BN_new();
-    EC_POINT_get_affine_coordinates_GFp(curve, temp3, x, nullptr, NULL);
+    EC_POINT_get_affine_coordinates_GFp(curve, temp3, x, nullptr, nullptr);
     return BN_cmp(x, r_);
 }
 
-void forge() {
+void forge_signature() {
     BIGNUM* u = BN_new();
     BIGNUM* v = BN_new();
     BIGNUM* gcd = BN_new();
@@ -81,7 +81,7 @@ void forge() {
     EC_POINT_mul(curve, R_, u, PK, v, BN_CTX_new());
 
     BIGNUM* r_ = BN_new();
-    EC_POINT_get_affine_coordinates_GFp(curve, R_, r_, nullptr, NULL);
+    EC_POINT_get_affine_coordinates_GFp(curve, R_, r_, nullptr, nullptr);
 
     BIGNUM* s_ = BN_new();
     BN_mod_inverse(s_, v, N, BN_CTX_new());
@@ -103,7 +103,7 @@ void forge() {
 
 int main() {
     init();
-    forge();
+    forge_signature();
 
     return 0;
 }
