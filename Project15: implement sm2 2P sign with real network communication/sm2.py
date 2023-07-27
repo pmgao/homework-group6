@@ -11,7 +11,7 @@ G = (G_X, G_Y)
 h = 1
 
 
-def inv(a, n):  # Extended Euclidean Algorithm/'division' in elliptic curves
+def inv(a, n):
     lm, hm = 1, 0
     low, high = a % n, n
     while low > 1:
@@ -30,17 +30,6 @@ def elliptic_add(a, b):
     x = (LamAdd * LamAdd - a[0] - b[0]) % P
     y = (LamAdd * (a[0] - x) - a[1]) % P
     return (x, y)
-
-
-def elliptic_inv(p):
-    r = [p[0]]
-    r.append(P - p[1])
-    return r
-
-
-def elliptic_sub(p, q):
-    q_inv = elliptic_inv(q)
-    return elliptic_add(p, q_inv)
 
 
 def elliptic_double(a):
@@ -76,14 +65,13 @@ def get_bit_num(x):
 
 
 def generate_key():
-    private_key = int(secrets.token_hex(32), 16)
-    public_key = elliptic_multiply(private_key, G)
-    return private_key, public_key
+    sk = int(secrets.token_hex(32), 16) % N
+    pk = elliptic_multiply(sk, G)
+    return sk, pk
 
 
 def KDF(Z, klen):
-    hlen = 256  # SM3's output is 256-bit
-    n = (klen // hlen) + 1
+    n = (klen // 256) + 1
     if n >= 2 ** 32 - 1: return 'error'
     K = ''
     for i in range(n):
@@ -91,8 +79,7 @@ def KDF(Z, klen):
         tmp_b = (Z + ct).encode('utf-8')
         Kct = sm3.sm3_hash(func.bytes_to_list(tmp_b))
         K += Kct  # K is hex string
-    bit_len = 256 * n
-    K = (bin(int(K, 16))[2:]).rjust(bit_len, '0')
+    K = (bin(int(K, 16))[2:]).rjust(256 * n, '0')
     K = K[:klen]  # MSB(K, klen)
     return K
 
