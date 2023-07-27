@@ -6,7 +6,7 @@ from sm2 import *
 
 
 def Gen_Key():
-    d1 = random.randint(0, N - 1)
+    d1 = random.randint(1, N - 1)
     P1 = elliptic_multiply(inv(d1, N), G)
     return d1, P1
 
@@ -21,8 +21,7 @@ def dec(T2, C1, C2, C3):
     tmp = elliptic_sub(T2, C1)
     x2 = hex(tmp[0])[2:]
     y2 = hex(tmp[1])[2:]
-    klen = len(C2) * 4
-    t = KDF(x2 + y2, klen)
+    t = KDF(x2 + y2, len(C2) * 4)
     M_ = dec_XOR(C2, t)
     u = sm3.sm3_hash(func.bytes_to_list(bytes((x2 + M_ + y2), encoding='utf-8')))
     if u != C3: return 'error:u != C3'
@@ -53,6 +52,6 @@ if __name__ == "__main__":
     flag = data.index('||')
     T2 = (int(data[:flag]), int(data[flag + 2:]))
     M_ = dec(T2, C1, C2, C3)
-    print("解密结果: ", M_)
+    print("decrypted text: ", M_)
     s.close()
     print("client finished")
