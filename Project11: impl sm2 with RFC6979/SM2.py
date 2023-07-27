@@ -1,47 +1,14 @@
-import random
-from Crypto.Cipher import AES
-from gmssl import sm2
+import secrets
+from hashlib import sha256
+from gmssl import sm3, func
 
-P = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF
-A = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC
-B = 0x28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93
-N = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123
-Gx = 0x32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7
-Gy = 0xBC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0
-G = [Gx, Gy]
-
-
-def PGP_encrypt(message, key):
-    cryptor = AES.new(key.encode('utf-8'), AES.MODE_ECB)
-
-    length = 16
-    count = len(message)
-    add = length - (count % length) if count % length != 0 else 0
-
-    padded_message = message + ('\0' * add)
-    ciphertext1 = cryptor.encrypt(padded_message.encode('utf-8'))
-    key_encode = key.encode('utf-8')
-    ciphertext2 = sm2_crypt.encrypt(key_encode)
-
-    print("Encrypted message using the session key k (AES):", ciphertext1)
-    print("Encrypted session key k using the SM2 public key:", ciphertext2)
-
-    return ciphertext1, ciphertext2
-
-
-def PGP_decrypt(ciphertext1, ciphertext2):
-    session_key = sm2_crypt.decrypt(ciphertext2)
-    print("Decrypted session key using SM2 private key:", session_key.decode('utf-8'))
-
-    cryptor = AES.new(session_key, AES.MODE_ECB)
-    plain_text = cryptor.decrypt(ciphertext1)
-    print("Decrypted original message using session key:", plain_text.rstrip(b'\x00').decode('utf-8'))
-
-
-def key_gen(a, p, n, Gx, Gy):
-    d = random.randint(2, n - 1)
-    Q = elliptic_multiply(d, [Gx, Gy])
-    return d, Q
+A = 0x787968B4FA32C3FD2417842E73BBFEFF2F3C848B6831D7E0EC65228B3937E498
+B = 0x63E4C6D3B23B0C849CF84241484BFE48F61D59A5B16BA06E6E12D1DA27C5249A
+P = 0x8542D69E4C044F18E8B92435BF6FF7DE457283915C45517D722EDB8B08F1DFC3
+N = 0x8542D69E4C044F18E8B92435BF6FF7DD297720630485628D5AE74EE7C32E79B7
+G_X = 0x421DEBD61B62EAB6746434EBC3CC315E32220B3BADD50BDC4C4E6C147FEDD43D
+G_Y = 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2
+G = (G_X, G_Y)
 
 
 def inv(a, n):
@@ -79,17 +46,86 @@ def elliptic_multiply(ScalarHex, GenPoint):
     return (Q)
 
 
-if __name__ == '__main__':
-    [private_key, public_key] = key_gen(A, P, N, Gx, Gy)
-    private_key_hex = hex(private_key)[2:]
-    public_key_hex = hex(public_key[0])[2:] + hex(public_key[1])[2:]
-    sm2_crypt = sm2.CryptSM2(public_key=public_key_hex, private_key=private_key_hex)
+def get_bit_num(x):
+    if isinstance(x, int):
+        num = 0
+        while x:
+            num += 1
+            x >>= 1
+        return num
+    elif isinstance(x, str):
+        return len(x.encode()) * 8
+    elif isinstance(x, bytes):
+        return len(x) * 8
+    return 0
 
-    message = "Shandong University 202100460055"
-    print("Message:", message)
 
-    session_key = hex(random.randint(2 ** 127, 2 ** 128))[2:]
-    print("Randomly generated symmetric encryption key:", session_key)
+def precompute(ID, a, b, G_X, G_Y, x_A, y_A):
+    joint = str(get_bit_num(ID)) + ID + str(a) + str(b) + str(G_X) + str(G_Y) + str(x_A) + str(y_A)
+    joint_b = bytes(joint, encoding='utf-8')
 
-    result1, result2 = PGP_encrypt(message, session_key)
-    PGP_decrypt(result1, result2)
+    digest = sm3.sm3_hash(func.bytes_to_list(joint_b))
+    return int(digest, 16)
+
+
+def generate_key():
+    private_key = int(secrets.token_hex(32), 16) % N
+    public_key = elliptic_multiply(private_key, G)
+    return private_key, public_key
+
+
+def sign(private_key, message, Z_A):
+    _M_b = bytes(Z_A + message, encoding='utf-8')
+    e = sm3.sm3_hash(func.bytes_to_list(_M_b))  # str
+    e = int(e, 16)
+    k = int(sha256(
+        (str(private_key) + sm3.sm3_hash(func.bytes_to_list(bytes(message, encoding='utf-8')))).encode()).hexdigest(),
+            16)  # 伪随机k的生成_RFC6979
+    if k >= P:
+        return None
+    rp = elliptic_multiply(k, G)
+
+    r = (e + rp[0]) % N
+    s = (inv(1 + private_key, N) * (k - r * private_key)) % N
+    return (r, s)
+
+
+def verify(public_key, ID, message, signature):
+    r = signature[0]
+    s = signature[1]
+
+    Z = precompute(ID, A, B, G_X, G_Y, public_key[0], public_key[1])
+
+    _M = str(Z) + message
+    _M_b = bytes(_M, encoding='utf-8')
+    e = sm3.sm3_hash(func.bytes_to_list(_M_b))  # str
+    e = int(e, 16)
+    t = (r + s) % N
+
+    point = elliptic_multiply(s, G)
+    point1 = elliptic_multiply(t, public_key)
+    point = elliptic_add(point, point1)
+
+    x1 = point[0]
+    R = (e + x1) % N
+
+    return R == r
+
+
+if __name__ == "__main__":
+    sk, pk = generate_key()
+    print('pk：', pk)
+    message = input("Input your message: ")
+    ID = input("Input your ID: ")
+
+    Z_A = precompute(ID, A, B, G_X, G_Y, pk[0], pk[1])
+    signature = sign(sk, message, str(Z_A))
+    while signature is None:
+        sk, pk = generate_key()
+        print('new pk：', pk)
+        Z_A = precompute(ID, A, B, G_X, G_Y, pk[0], pk[1])
+        signature = sign(sk, message, str(Z_A))
+
+    print("sign: ", signature)
+    if verify(pk, ID, message, signature) == 1:
+        print('verified!')
