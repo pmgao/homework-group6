@@ -6,14 +6,43 @@
 
 ## 项目结果
 
-​	所采用的曲线结构为secpk256k1曲线，所签名消息为字符串“202100460055”，并设定参与签名的成员共有2个，按照上图流程分别计算得到s，R，e与P的和。
+​	所采用的曲线结构为secpk256k1曲线，所签名消息为字符串“202100460055”，并设定参与签名的成员共有2个，所签消息内容均为“202100460055”，按照上图流程分别计算得到s，R，e与P的和。采用的公私钥数据为：
 
 ```python
-privKey_bob = 77664663271170673620859955297191590031376319879614890096024130175852238738811
-privKey_alice = 89652975980192045565381556847798492396888680198332589948144044069692575244768
-PublicKey_bob = elliptic_multiply(GPoint, privKey_bob)
-PublicKey_alice = elliptic_multiply(GPoint, privKey_alice)
+msg = "202100460055"
+SK_bob = 0xabb4a442f70621a2137a8b332b6cd653de30dbb4b47fc2044cef13488e66157b
+SK_alice = 89652975980192045565381556847798492396888680198332589948144044069692575244768
+PK_bob = elliptic_multiply(GPoint, SK_bob)
+PK_alice = elliptic_multiply(GPoint, SK_alice)
 ```
+
+关于签名分量s的和的计算：
+
+```python
+    s1 = (k1_bob + (H * SK_bob)) % N
+    s2 = (k2_alice + (H * SK_alice)) % N
+
+    s = (s1 + s2) % N
+    print("s:", s)
+```
+
+关于签名分量R的和的计算：
+
+```python
+    R1 = elliptic_multiply(GPoint, k1_bob)
+    R2 = elliptic_multiply(GPoint, k2_alice)
+
+    R = elliptic_add(R1, R2)
+    print("R: ", R)
+```
+
+关于P的和的计算：
+
+```python
+    P = elliptic_add(PK_bob, PK_alice)
+    print("P:", P)
+```
+
 
 <img src=".\md_image\2.png" alt="image-20230715142534911"  />
 
