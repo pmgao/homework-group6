@@ -8,7 +8,7 @@
 
 ## 项目结果
 
-使用openssl时采用的曲线结构为secpk256k1曲线。
+相应的椭圆曲线运算使用Openssl 1.1.1l版本来实现，在代码中所采用的曲线结构为secpk256k1曲线。
 
 ```c++
 EC_GROUP* curve = EC_GROUP_new_by_curve_name(NID_secp256k1);
