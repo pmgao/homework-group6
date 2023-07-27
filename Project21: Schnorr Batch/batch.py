@@ -1,5 +1,4 @@
 import hashlib
-import sys
 
 # secp256k1
 N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
@@ -10,8 +9,8 @@ Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
 Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
 GPoint = [Gx, Gy]
 
-privKey_bob = 77664663271170673620859955297191590031376319879614890096024130175852238738811
-privKey_alice = 89652975980192045565381556847798492396888680198332589948144044069692575244768
+SK_bob = 0xabb4a442f70621a2137a8b332b6cd653de30dbb4b47fc2044cef13488e66157b
+SK_alice = 89652975980192045565381556847798492396888680198332589948144044069692575244768
 
 
 def modinv(a, n=Pcurve):
@@ -55,23 +54,23 @@ if __name__ == "__main__":
     print("Message: ", msg)
     msg = msg.encode()
 
-    PublicKey_bob = elliptic_multiply(GPoint, privKey_bob)
-    PublicKey_alice = elliptic_multiply(GPoint, privKey_alice)
+    PK_bob = elliptic_multiply(GPoint, SK_bob)
+    PK_alice = elliptic_multiply(GPoint, SK_alice)
 
     print("Public Key Bob:")
-    print("X: " + str(PublicKey_bob[0]))
-    print("Y: " + str(PublicKey_bob[1]))
+    print("X: " + str(PK_bob[0]))
+    print("Y: " + str(PK_bob[1]))
 
     print("Public Key Alice:")
-    print("X: " + str(PublicKey_alice[0]))
-    print("Y: " + str(PublicKey_alice[1]))
+    print("X: " + str(PK_alice[0]))
+    print("Y: " + str(PK_alice[1]))
     print()
 
-    P = elliptic_add(PublicKey_bob, PublicKey_alice)
+    P = elliptic_add(PK_bob, PK_alice)
     print("P:", P)
 
-    k1_bob = 77664663271170673620859955297191590031376319879614890096024130175852238738811 - 1
-    k2_alice = 89652975980192045565381556847798492396888680198332589948144044069692575244768 - 1
+    k1_bob = 0xabb4a442f70621a2137a8b332b6cd653de30dbb4b47fc2044cef13488e66157b - 1
+    k2_alice = 0xc635c94354e3ba92c643e82fbdc325d5dea1a5e9b95251befe09f7e7410ee1e0 - 1
 
     R1 = elliptic_multiply(GPoint, k1_bob)
     R2 = elliptic_multiply(GPoint, k2_alice)
@@ -84,12 +83,11 @@ if __name__ == "__main__":
 
     hasher = hashlib.sha256()
     hasher.update(P_bytes + R_bytes + msg)
-    h = hasher.digest()
-    H = int.from_bytes(h, 'big')
+    H = int.from_bytes(hasher.digest(), 'big')
     print("H:", H)
 
-    s1 = (k1_bob + (H * privKey_bob)) % N
-    s2 = (k2_alice + (H * privKey_alice)) % N
+    s1 = (k1_bob + (H * SK_bob)) % N
+    s2 = (k2_alice + (H * SK_alice)) % N
 
     s = (s1 + s2) % N
     print("s:", s)
