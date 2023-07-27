@@ -6,7 +6,7 @@ import socket
 
 
 def Gen_Key():
-    d1 = random.randint(0, N - 1)
+    d1 = random.randint(1, N - 1)
     P1 = elliptic_multiply(inv(d1, N), G)
     return d1, P1
 
@@ -14,7 +14,7 @@ def Gen_Key():
 def Gen_Q1_e(Z, M):
     M_ = bytes(Z + M, encoding='utf-8')
     e = sm3.sm3_hash(func.bytes_to_list(M_))
-    k1 = random.randint(0, N - 1)
+    k1 = random.randint(1, N - 1)
     Q1 = elliptic_multiply(k1, G)
     return k1, Q1, e
 
