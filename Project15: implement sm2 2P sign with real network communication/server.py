@@ -4,15 +4,15 @@ from sm2 import *
 
 
 def Gen_Key(P1):
-    d2 = random.randint(0, N - 1)
+    d2 = random.randint(1, N - 1)
     P = elliptic_sub(elliptic_multiply(inv(d2, N), P1), G)
     return d2, P
 
 
 def Gen_r_s2_s3(d2, Q1, e):
     e = int(e, 16)
-    k2 = random.randint(0, N - 1)
-    k3 = random.randint(0, N - 1)
+    k2 = random.randint(1, N - 1)
+    k3 = random.randint(1, N - 1)
     Q2 = elliptic_multiply(k2, G)
     x1, y1 = elliptic_add(elliptic_multiply(k3, Q1), Q2)
     r = (x1 + e) % N
