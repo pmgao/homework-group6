@@ -30,7 +30,7 @@
 EC_GROUP* ecgroup = EC_GROUP_new_by_curve_name(NID_secp256k1);
 ```
 
-Trusted Issuer方需要得到随机数种子，并计算122重哈希：
+Trusted Issuer方需要得到128比特随机数种子(即16字节)，并计算122重哈希：
 
 ```c++
 uint8_t* trusted_issuer(EC_KEY* eckey, std::string& signature) {
