@@ -1,6 +1,6 @@
 # Project6: impl this protocol with actual network communication
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230729211101573.png" alt="image-20230729211101573"  />
+<img src=".\md_image\1.png" alt="image-20230729211101573"  />
 
 来源于课程PPT，本质上是利用哈希函数进行范围证明。以本图内容为例，在证明流程中存在着三方：Trusted Issuer, Alice与Bob，而Alice想要向Bob证明她的年龄大于21，但不能向Bob透露她的具体年龄(即零知识证明)。
 
@@ -13,6 +13,14 @@
 3、Bob得到Alice的多重哈希值之后，继续在其基础上计算100重哈希值，判断其最终数据是否可以通过签名。
 
 上述流程本质上是将122重哈希值拆成两部分：22重+100重，分派给Alice与Bob分别完成，最后根据签名验证即可。
+
+## 运行环境
+
+编译器：Visual Studio 2019，MSVC编译器，C11/C++14标准，64位环境
+
+第三方库：Openssl 1.1.1l版本
+
+操作系统：Windows10
 
 ## 项目结果
 
@@ -85,4 +93,4 @@ bool Bob(EC_KEY* eckey, std::string& signature, uint8_t* p) {
 
 运行结果如下图所示：
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20230729212310100.png" alt="image-20230729212310100"  />
+<img src=".\md_image\2.png" alt="image-20230729212310100"  />
