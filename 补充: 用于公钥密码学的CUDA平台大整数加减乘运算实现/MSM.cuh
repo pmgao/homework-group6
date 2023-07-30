@@ -448,6 +448,7 @@ __device__ __forceinline__ bool mp_mul_red_cl(uint64_t* evenOdd, const uint32_t*
   return carry;
 }
 
+
 __device__ __forceinline__ void ADD(uint32_t* a, const uint32_t* b, uint32_t* result) {
     mp_add<NUM>(a,b,result);
     while(mp_comp_ge<NUM>(result,MODULUS)){
