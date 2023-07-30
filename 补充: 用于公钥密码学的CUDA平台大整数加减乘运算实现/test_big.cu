@@ -7,7 +7,7 @@ using namespace std;
 #include <cmath>
 #include <inttypes.h>
 #include <gmp.h>
-#include "./bigint.cuh"
+#include "./MSM.cuh"
 #define SIZE 4
 
 template<uint32_t limbs>
