@@ -266,3 +266,39 @@ __device__ __forceinline__ void MUL(uint32_t* a, uint32_t* b, uint32_t* result){
 > We generally observe the running time to be between ***2500 milliseconds*** and ***2600 milliseconds*** for a full run of 4 MSMs of size 2^26. Performance is quite dependent on the other workloads running on the same physical machine.
 
 而我在单块A100的GPU平台上所作测试之后，在无其它GPU负载的情况下上述运算效率会更加快速。
+
+与此同时，为了验证我们实现结果的正确性，我们以模乘运算为例测试了其相应的计算结果，并与CPU平台上使用GMP库所进行的运算结果进行比较:
+
+```c++
+uint32_t a[SIZE] = { 0x01345670, 0xabcdef12, 0x87654321, 0x0edcba10 };
+	uint32_t b[SIZE] = { 0x01345670, 0xabcdef21, 0x87654398, 0x0edcba10 };
+	uint32_t c[SIZE] = { 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff };
+	uint32_t r[SIZE];
+	uint32_t r_[SIZE];
+	
+	mpz_t A, B, C, R;
+	size_t size = sizeof(a) / sizeof(uint32_t);
+
+	mpz_init(A); mpz_init(B); mpz_init(C); mpz_init(R);
+	mpz_import(A, size, -1, sizeof(uint32_t), 0, 0, a);
+	mpz_import(B, size, -1, sizeof(uint32_t), 0, 0, b);
+	mpz_import(C, size, -1, sizeof(uint32_t), 0, 0, c);
+	mpz_mul(R, A, B);
+	mpz_mod(R, R, C);
+	gmp_printf("Result: %Zd\n", R);
+	size_t mark;
+	mpz_export(r, &mark, -1, sizeof(uint32_t), 0, 0, R);
+	while (mark<SIZE)
+		r[mark++] = 0;
+
+	cout << "GMP:\n";
+	//cout<<"MARK:"<<mark<<endl;
+	for (int i = 0; i<SIZE; i++)
+	{
+		cout << hex << r[i] << endl;
+	}
+```
+
+最终输出结果如下图所示，可见我们所综合的CUDA平台大整数运算实现的计算结果是正确的：
+
+<img src=".\md_image\1.png" alt="image-20230703174051013" style="zoom: 100%;" />
