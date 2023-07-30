@@ -16,7 +16,7 @@
 
 ### 模加
 
-这些基础函数主要集中于MP.cu Chain.cu asm.cu文件中，首先是模加运算：
+这些基础函数主要集中于MP.cu, Chain.cu与asm.cu文件中，首先是模加运算：
 
 ```c++
  __device__ __forceinline__ uint32_t uaddc_cc(uint32_t a, uint32_t b) {
