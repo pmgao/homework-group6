@@ -15,8 +15,7 @@
 #include <iostream>
 #include <vector>
 
-void sm3_openssl(const void* message, size_t len, uint8_t* hash)
-{
+void sm3_openssl(const void* message, size_t len, uint8_t* hash){
     EVP_MD_CTX* md_ctx;
     const EVP_MD* md;
 
@@ -158,8 +157,7 @@ bool Bob(EC_KEY* eckey, std::string& signature, uint8_t* p) {
     return ecdsaVerify(temp, signature, eckey);
 }
 
-int main()
-{
+int main(){
     EC_KEY* eckey = nullptr;
     _generateKeys(eckey);
     std::string signature;
