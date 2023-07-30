@@ -113,3 +113,15 @@ https://coinfaucet.eu/en/btc-testnet/ 在这个网站为我的收款地址申请
 7、"chain": "BTC.test3"
 表明了此次交易发生时所在的链
 ```
+
+虽然上述交易流程已经帮助我们撰写好了交易脚步，但我们可以获取交易脚本的内容，尝试解码出其对应含义：
+
+<img src=".\md_image\1.png" alt="20230630131339319" style="zoom:100%;" />
+
+可以看到，该交易所对应的脚本有一个输入与两个输出，对其进行解码，对应具体内容为：
+
+```
+OP_PUSHBYTES_72 20 1589d226a8adb4477fefdf5a3029033056d868c5b236159f694f9cf8519980f2 41 20413d2d9dbd380e9b6d5be4fc0d958e131b1f55d0afc875fc5bc47cf454d3d1c0 #input
+OP_PUSHBYTES_21 b9b5cc5fbe417af49ea3ff1b4a221cf1e2cbb0b6 #output 0
+OP_PUSHBYTES_32 8d44ae324a9488c5b993b62bbbd41adfc85acafc #output 1
+```
