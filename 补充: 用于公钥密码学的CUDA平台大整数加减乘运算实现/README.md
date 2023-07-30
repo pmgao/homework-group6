@@ -103,7 +103,7 @@ __device__ __forceinline__ void SUB(uint32_t* a, const uint32_t* b, uint32_t* re
 
 ### 模乘
 
-该项目模乘函数的核心是通过蒙哥马利算法运算实现的，通过此种算法可以将模运算所需要的除法运算去掉，大幅提高运算效率，在此不予赘述，直接展示其相关函数：
+该项目模乘函数的核心是通过蒙哥马利算法运算实现的，通过此种算法可以将模运算所需要的除法运算去掉，大幅提高运算效率，在此不赘述蒙哥马利算法的具体流程，直接展示其相关函数：
 
 ```c++
 __device__ __forceinline__ static uint32_t qTerm(uint32_t lowWord, uint32_t np0) {
