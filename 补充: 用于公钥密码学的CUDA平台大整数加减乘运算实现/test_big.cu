@@ -12,6 +12,7 @@ using namespace std;
 
 template<uint32_t limbs>
 __global__ void kernel(uint32_t* d_a, uint32_t* d_b, uint32_t* d_c){
+	np0=computeNP0(d_c[0]);
 	uint64_t evenOdd[limbs];
 	bool carry=mp_mul_red_cl<limbs>(evenOdd,d_a,d_b,d_c);
 	mp_merge_cl<limbs>(d_a,evenOdd,carry);
