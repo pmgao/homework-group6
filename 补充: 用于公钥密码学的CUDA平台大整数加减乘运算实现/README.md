@@ -54,7 +54,7 @@ __device__ __forceinline__ void mp_add(uint32_t* r, const uint32_t* a, const uin
 ```c++
 __device__ __forceinline__ void ADD(uint32_t* a, const uint32_t* b, uint32_t* result) {
     mp_add<NUM>(a,b,result);
-    while(mp_comp_ge<NUM>(result,MODULUS)){
+    if(mp_comp_ge<NUM>(result,MODULUS)){
         mp_sub<NUM>(result,MODULUS,result);
     }
 }
@@ -91,12 +91,9 @@ __device__ __forceinline__ void mp_sub(uint32_t* r, const uint32_t* a, const uin
 }
 
 __device__ __forceinline__ void SUB(uint32_t* a, const uint32_t* b, uint32_t* result) {
-    while(mp_comp_ge<NUM>(a,b)){
-        mp_add<NUM>(b,MODULUS,b);
-    }
-    mp_sub<NUM>(b,a,result);
-    while(mp_comp_ge<NUM>(result,MODULUS)){
-        mp_sub<NUM>(result,MODULUS,result);
+    mp_sub<NUM>(a,b,result);
+    if(mp_comp_gt<NUM>(result,a)){
+        mp_add<NUM>(result,MODULUS,result);
     }
 }
 ```
