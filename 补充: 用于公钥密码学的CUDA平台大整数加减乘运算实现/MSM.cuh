@@ -450,15 +450,15 @@ __device__ __forceinline__ bool mp_mul_red_cl(uint64_t* evenOdd, const uint32_t*
 
 
 __device__ __forceinline__ void ADD(uint32_t* a, const uint32_t* b, uint32_t* result) {
-    mp_add<NUM>(self,rhs,result);
+    mp_add<NUM>(a,b,result);
     if(mp_comp_ge<NUM>(result,MODULUS)){
         mp_sub<NUM>(result,MODULUS,result);
     }
 }
 
 __device__ __forceinline__ void SUB(uint32_t* a, const uint32_t* b, uint32_t* result) {
-    mp_sub<NUM>(self,rhs,result);
-    if(mp_comp_gt<NUM>(result,self)){
+    mp_sub<NUM>(a,b,result);
+    if(mp_comp_gt<NUM>(result,a)){
         mp_add<NUM>(result,MODULUS,result);
     }
 }
