@@ -310,6 +310,17 @@ __device__ __forceinline__ uint32_t computeNP0(uint32_t x) {
 }
 
 template<uint32_t limbs>
+__device__ __forceinline__ bool mp_comp_gt(const uint32_t* a, const uint32_t* b) {
+  chain_t chain;
+  
+  // a>b --> b-a is negative
+  #pragma unroll
+  for(int32_t i=0;i<limbs;i++)
+    chain.sub(b[i], a[i]);
+  return !chain.getCarry();
+}
+
+template<uint32_t limbs>
 __device__ __forceinline__ bool mp_comp_ge(const uint32_t* a, const uint32_t* b) {
   chain_t chain;
   
