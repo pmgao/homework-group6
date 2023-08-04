@@ -14,7 +14,7 @@
 
 ## 项目及完成情况：
 
-本课程共有21个项目，完成了其中的20个项目，未完成项目Project 7。
+本课程共有21个项目，而本仓库完成了所有的项目内容。
 
 | 项目序号  | 项目名称                                                     | 对应项目文件夹                                               | 项目完成情况 | 项目实现方式及效果                                           |
 | :-------: | ------------------------------------------------------------ | ------------------------------------------------------------ | :----------: | ------------------------------------------------------------ |
@@ -24,7 +24,7 @@
 | Project4  | do your best to optimize SM3 implementation (software)       | [**optimized SM3** ](https://github.com/Borpord/homework-group6/tree/main/Project04%3A%20do%20your%20best%20to%20optimize%20SM3%20implementation%20(software)) |      ✔️       | 通过C++语言，分别抽取了Openssl库中对于SM3的实现与自己手动实现的SM3算法，并采用了SIMD指令、循环展开与宏定义函数的方式来进行优化，最后可实现约10%~15%的加速。 |
 | Project5  | Impl Merkle Tree following RFC6962                           | [**Merkle Tree** ](https://github.com/Borpord/homework-group6/tree/main/Project05%3A%20Impl%20Merkle%20Tree%20following%20RFC6962) |      ✔️       | 利用C++语言来实现，采用的哈希函数实例为SHA256算法。          |
 | Project6  | impl this protocol with actual network communication         | [**Hash Wires for Range Proof** ](https://github.com/Borpord/homework-group6/tree/main/Project06:%20impl%20this%20protocol%20with%20actual%20network%20communication) |      ✔️       | 仿照课程PPT流程，为了使得Alice向Bob证明她的年龄大于21岁，依赖于可信第三方，利用C++语言与实例化的SM3算法来进行零知识的范围证明(by hash wires)。 |
-| Project7  | Try to Implement this scheme                                 | ❌                                                            |      ❌       | ❌                                                            |
+| Project7  | Try to Implement this scheme                                 | [**Generalizing Hash Chains** ](https://github.com/Borpord/homework-group6/tree/main/Project07:%20Try%20to%20Implement%20this%20scheme)                                                          |      ✔️        | 通过C++语言并借助于Openssl库，完成一般化的hash wires，并完成相应的范围证明测试。                                                      |
 | Project8  | AES impl with ARM instruction                                | [**AES impl with ARM** ](https://github.com/Borpord/homework-group6/tree/main/Project08%3A%20AES%20impl%20with%20ARM%20instruction) |      ✔️       | 借助于云服务器，通过C++语言，采用ARM处理器所提供的AESNI指令来完成AES的加解密函数，并验证了其正确性，加解密时间可以做到纳秒级。 |
 | Project9  | AES / SM4 software implementation                            | [**AES/SM4 impl** ](https://github.com/Borpord/homework-group6/tree/main/Project09%3A%20AES%20and%20SM4%20software%20implementation) |      ✔️       | 通过C++语言，首先利用x86处理器的AESNI指令完成了对于AES的软件实现，之后通过AES与SM4算法数域结构的同构特性，也利用AESNI指令完成了对于SM4算法的实现，对于所实现的AES与SM4分别验证了其正确性，并且加解密时间均可做到纳秒级。 |
 | Project10 | report on the application of this deduce technique in Ethereum with ECDSA | [**the deduce technique of ECDSA** ](https://github.com/Borpord/homework-group6/tree/main/Project10%3A%20report%20on%20the%20application%20of%20this%20deduce%20technique%20in%20Ethereum%20with%20ECDSA) |      ✔️       | 主要介绍了从ECDSA签名中推导出公钥的方法，并介绍了此种方法对于区块链网络的优势所在。 |
@@ -45,4 +45,4 @@
 - ✔️：项目已完成
 - ❌：项目未完成
 
-所有项目的详细报告内容，可进入对应的项目文件夹详细查看。与此同时，本仓库还添加了本学期所作的其它的一个额外项目的子模块：[用于公钥密码学的CUDA平台大整数加减乘运算实现](https://github.com/Borpord/homework-group6/tree/main/%E8%A1%A5%E5%85%85:%20%E7%94%A8%E4%BA%8E%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E7%9A%84CUDA%E5%B9%B3%E5%8F%B0%E5%A4%A7%E6%95%B4%E6%95%B0%E5%8A%A0%E5%87%8F%E4%B9%98%E8%BF%90%E7%AE%97%E5%AE%9E%E7%8E%B0)，主要基于多标量乘法来实现对于256bit, 512bit, 1024bit或其它长度数据的快速运算，虽然与本课程内容并无直接关系，但可能会对于CUDA平台的密码学项目开发比较有用，因而也引入到本仓库当中。
+所有项目的详细报告内容，可进入对应的项目文件夹详细查看README.md文件。与此同时，本仓库还添加了本学期所作的其它的一个额外项目的子模块：[用于公钥密码学的CUDA平台大整数加减乘运算实现](https://github.com/Borpord/homework-group6/tree/main/%E8%A1%A5%E5%85%85:%20%E7%94%A8%E4%BA%8E%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E7%9A%84CUDA%E5%B9%B3%E5%8F%B0%E5%A4%A7%E6%95%B4%E6%95%B0%E5%8A%A0%E5%87%8F%E4%B9%98%E8%BF%90%E7%AE%97%E5%AE%9E%E7%8E%B0)，主要基于多标量乘法来实现对于256bit, 512bit, 1024bit或其它长度数据的快速运算，虽然与本课程内容并无直接关系，但可能会对于CUDA平台的密码学项目开发比较有用，因而也引入到本仓库当中。
