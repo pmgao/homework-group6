@@ -1,10 +1,9 @@
 # Project7: Try to Implement this scheme
 
 ## 理论介绍：
+HashWires 是一个基于区块链的去中心化数据存储系统，采用了一种被称为 Hyperefficient Credential-Based Range Proofs（具有超高效证书的区间证明）的证明机制。这种机制通过引入一种称为 HashWire 的新型哈希链结构，使得多个证书可以被压缩成一个证书，并且将证书的大小从 O(n) 压缩到 O(log n)。具体来说，每个证书上都附加了一个哈希值，并与前一个证书串联起来。 HashWire 实质上就是一个哈希链，其中每个哈希值对应一个证书。通过使用 HashWire，Hyperefficient Credential-Based Range Proofs 可以在 O(log n) 的时间内生成，并且证明的大小也只有 O(log n)。
 
-  	HashWires 是一个基于区块链的去中心化数据存储系统，采用了一种被称为 Hyperefficient Credential-Based Range Proofs（具有超高效证书的区间证明）的证明机制。这种机制通过引入一种称为 HashWire 的新型哈希链结构，使得多个证书可以被压缩成一个证书，并且将证书的大小从 O(n) 压缩到 O(log n)。具体来说，每个证书上都附加了一个哈希值，并与前一个证书串联起来。 HashWire 实质上就是一个哈希链，其中每个哈希值对应一个证书。通过使用 HashWire，Hyperefficient Credential-Based Range Proofs 可以在 O(log n) 的时间内生成，并且证明的大小也只有 O(log n)。
-  	
-  	相比传统的区间证明机制，它更快速，同时也节省了大量空间，使其在去中心化数据存储系统中更加实用。因此，HashWires 的 Hyperefficient Credential-Based Range Proofs 机制通过引入 HashWire 哈希链结构，可以压缩证书大小并提高证明生成的效率。
+相比传统的区间证明机制，它更快速，同时也节省了大量空间，使其在去中心化数据存储系统中更加实用。因此，HashWires 的 Hyperefficient Credential-Based Range Proofs 机制通过引入 HashWire 哈希链结构，可以压缩证书大小并提高证明生成的效率。
 
 ## 项目实现：
 本项目采用C++语言搭配Openssl来实现hashwires并进行相应的区间证明测试，其中Openssl采用1.1.1l版本，采用的实例化哈希函数为SHA256。
