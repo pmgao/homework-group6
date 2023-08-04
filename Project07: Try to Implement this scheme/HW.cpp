@@ -89,11 +89,9 @@ private:
 };
 
 int main() {
-    std::vector<int> values = { 1, 2, 3, 4, 5 };
+    std::vector<int> values = { 1, 2, 3, 4 };
     RangeProof range_proof(values);
-    int a = 1, b = 3;
-    std::vector<std::string> proof = range_proof.generate_proof(a, b);
-
+    std::vector<std::string> proof = range_proof.generate_proof(1, 2);
     std::cout << "Final result:" << std::endl;
     for (const auto& certificate : proof) {
         std::cout << certificate << std::endl;
